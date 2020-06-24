@@ -24,11 +24,19 @@ namespace GazeboModelRobotRaconteurDriver
         protected internal bool connected = false;
         protected internal RobotOperationalMode gazebo_operational_mode;
 
+        protected internal GeneralRoboticsToolbox.Robot rox_robot_no_limits;
+
         public GazeboRobot(RobotInfo robot_info, string gazebo_url, string gazebo_model_name, RobotOperationalMode gazebo_operational_mode) : base(robot_info, 0)
         {
             this.gazebo_url = gazebo_url;
             this.gazebo_model_name = gazebo_model_name;
             this.gazebo_operational_mode = gazebo_operational_mode;
+
+            this.rox_robot_no_limits = RobotInfoConverter.ToToolboxRobot(robot_info, 0);
+            rox_robot_no_limits.Joint_lower_limit = null;
+            rox_robot_no_limits.Joint_upper_limit = null;
+            rox_robot_no_limits.Joint_vel_limit = null;
+            rox_robot_no_limits.Joint_acc_limit = null;
 
         }
 
@@ -234,7 +242,7 @@ namespace GazeboModelRobotRaconteurDriver
             com.robotraconteur.geometry.Pose? ep_pose = null;
             try
             {
-                var rox_ep_pose = GeneralRoboticsToolbox.Functions.Fwdkin(rox_robot, pos);
+                var rox_ep_pose = GeneralRoboticsToolbox.Functions.Fwdkin(rox_robot_no_limits, pos);
 
                 ep_pose = RobotRaconteurWeb.StandardRobDefLib.Converters.GeometryConverter.ToPose(rox_ep_pose);
             }
