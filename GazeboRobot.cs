@@ -1,10 +1,11 @@
 ﻿using com.robotraconteur.robotics.robot;
-using RobotRaconteurWeb;
-using RobotRaconteurWeb.StandardRobDefLib.Robot;
+using RobotRaconteur;
+using RobotRaconteur.Companion.Robot;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Rox = GeneralRoboticsToolbox;
 
 namespace GazeboModelRobotRaconteurDriver
 {
@@ -24,7 +25,7 @@ namespace GazeboModelRobotRaconteurDriver
         protected internal bool connected = false;
         protected internal RobotOperationalMode gazebo_operational_mode;
 
-        protected internal GeneralRoboticsToolbox.Robot rox_robot_no_limits;
+        protected internal GeneralRoboticsToolbox.Robot[] rox_robots_no_limits;
 
         public GazeboRobot(RobotInfo robot_info, string gazebo_url, string gazebo_model_name, RobotOperationalMode gazebo_operational_mode) : base(robot_info, 0)
         {
@@ -32,12 +33,15 @@ namespace GazeboModelRobotRaconteurDriver
             this.gazebo_model_name = gazebo_model_name;
             this.gazebo_operational_mode = gazebo_operational_mode;
 
-            this.rox_robot_no_limits = RobotInfoConverter.ToToolboxRobot(robot_info, 0);
-            rox_robot_no_limits.Joint_lower_limit = null;
-            rox_robot_no_limits.Joint_upper_limit = null;
-            rox_robot_no_limits.Joint_vel_limit = null;
-            rox_robot_no_limits.Joint_acc_limit = null;
-
+            this.rox_robots_no_limits = new Rox.Robot[robot_info.chains.Count];
+            for (int i = 0; i < robot_info.chains.Count; i++)
+            {
+                this.rox_robots_no_limits[i] = RobotInfoConverter.ToToolboxRobot(robot_info, i);
+                rox_robots_no_limits[i].Joint_lower_limit = null;
+                rox_robots_no_limits[i].Joint_upper_limit = null;
+                rox_robots_no_limits[i].Joint_vel_limit = null;
+                rox_robots_no_limits[i].Joint_acc_limit = null;
+            }
         }
 
         protected override bool _verify_communication(long now)
@@ -69,12 +73,20 @@ namespace GazeboModelRobotRaconteurDriver
             return base._verify_communication(now);
         }
 
-        protected virtual void _gazebo_client_listener(ClientContext context, ClientServiceListenerEventType ev, object parameter)
+        protected virtual void _gazebo_client_listener(ServiceStub context, ClientServiceListenerEventType ev, object parameter)
         {
-            if (ev == ClientServiceListenerEventType.ClientClosed)
+            if (ev == ClientServiceListenerEventType.ClientClosed || ev == ClientServiceListenerEventType.ServicePathReleased)
             {
                 lock (this)
                 {
+                    if (ev == ClientServiceListenerEventType.ServicePathReleased)
+                    {
+                        if (((string)parameter) != model_rr_path)
+                        {
+                            return;
+                        }
+                    }
+
                     connected = false;
                     gazebo_server = null;
                     gazebo_robot = null;
@@ -89,6 +101,7 @@ namespace GazeboModelRobotRaconteurDriver
             }
         }
 
+        protected string model_rr_path;
         protected virtual async Task _connect_gazebo()
         {
             try
@@ -101,6 +114,8 @@ namespace GazeboModelRobotRaconteurDriver
                 Wire<Dictionary<string, double>>.WireConnection controller_velocity;
                 Wire<Dictionary<string, double>>.WireConnection controller_velocity_command;
 
+                experimental.gazebo.Server old_server;
+
                 lock (this)
                 {
                     if (connected || connecting)
@@ -109,6 +124,7 @@ namespace GazeboModelRobotRaconteurDriver
                     }
                     connecting = true;
                     connected = false;
+                    old_server = gazebo_server;
                     gazebo_server = null;
                     gazebo_robot = null;
                     gazebo_controller = null;
@@ -118,34 +134,52 @@ namespace GazeboModelRobotRaconteurDriver
                     gazebo_controller_velocity_command = null;
                 }
 
-                Console.WriteLine($"Begin connect to gazebo with url {gazebo_url} and model {gazebo_model_name}");
-                server = (experimental.gazebo.Server)await RobotRaconteurNode.s.ConnectService(gazebo_url, listener: _gazebo_client_listener);
-                var w_names = await server.get_world_names();
-                var w = await server.get_worlds(w_names[0]);
-                model = await w.get_models(gazebo_model_name);
                 try
                 {
-                    await model.destroy_joint_controller();
-                }
-                catch (Exception) { }
-                try
-                {
-                    await model.destroy_kinematic_joint_controller();
+                    if (old_server != null)
+                    {
+                        RobotRaconteurNode.s.AsyncDisconnectService(old_server).ContinueWith(c => { var ignored = c.Exception; },
+                                    TaskContinuationOptions.OnlyOnFaulted |
+                                    TaskContinuationOptions.ExecuteSynchronously);
+                    }
                 }
                 catch (Exception) { }
 
-                await model.create_kinematic_joint_controller();
-                controller = await model.get_kinematic_joint_controller();
+                Console.WriteLine($"Begin connect to gazebo with url {gazebo_url} and model {gazebo_model_name}");
+                server = (experimental.gazebo.Server)await RobotRaconteurNode.s.AsyncConnectService(gazebo_url, null, null, _gazebo_client_listener, null);
+                var a_server = (experimental.gazebo.async_Server)server;
+                var w_names = await a_server.async_get_world_names();
+                var w = await a_server.async_get_worlds(w_names[0]);
+                var a_w = (experimental.gazebo.async_World)w;
+                model = await a_w.async_get_models(gazebo_model_name);
+
+                model_rr_path = RobotRaconteurNode.s.GetObjectServicePath(model);
+
+                var a_model = (experimental.gazebo.async_Model)model;
+                try
+                {
+                    await a_model.async_destroy_joint_controller();
+                }
+                catch (Exception) { }
+                try
+                {
+                    await a_model.async_destroy_kinematic_joint_controller();
+                }
+                catch (Exception) { }
+
+                await a_model.async_create_kinematic_joint_controller();
+                controller = await a_model.async_get_kinematic_joint_controller();
+                var a_controller = (experimental.gazebo.async_JointController)controller;
 
                 foreach (var joint_name in _joint_names)
                 {
-                    await controller.add_joint(joint_name);
+                    await a_controller.async_add_joint(joint_name);
                 }
 
-                controller_position = await controller.joint_position.Connect();
-                controller_position_command = await controller.joint_position_command.Connect();
-                controller_velocity = await controller.joint_velocity.Connect();
-                controller_velocity_command = await controller.joint_velocity_command.Connect();
+                controller_position = await controller.joint_position.AsyncConnect();
+                controller_position_command = await controller.joint_position_command.AsyncConnect();
+                controller_velocity = await controller.joint_velocity.AsyncConnect();
+                controller_velocity_command = await controller.joint_velocity_command.AsyncConnect();
 
                 lock (this)
                 {
@@ -239,14 +273,26 @@ namespace GazeboModelRobotRaconteurDriver
                 pos[i] = value[_joint_names[i]];
             }
 
-            com.robotraconteur.geometry.Pose? ep_pose = null;
+            com.robotraconteur.geometry.Pose[] ep_pose = new com.robotraconteur.geometry.Pose[rox_robots_no_limits.Length];
             try
             {
-                var rox_ep_pose = GeneralRoboticsToolbox.Functions.Fwdkin(rox_robot_no_limits, pos);
+                for (int i = 0; i < rox_robots_no_limits.Length; i++)
+                {
+                    var joint_numbers = this._robot_info.chains[i].joint_numbers;
+                    double[] pos1 = new double[joint_numbers.Length];
+                    for (int j=0; j<joint_numbers.Length; j++)
+                    {
+                        pos1[j] = pos[joint_numbers[j]];
+                    }
+                    var rox_ep_pose = GeneralRoboticsToolbox.Functions.Fwdkin(rox_robots_no_limits[i], pos1);
 
-                ep_pose = RobotRaconteurWeb.StandardRobDefLib.Converters.GeometryConverter.ToPose(rox_ep_pose);
+                    ep_pose[i] = RobotRaconteur.Companion.Converters.GeometryConverter.ToPose(rox_ep_pose);
+                }
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                ep_pose = null;
+            }
 
             lock (this)
             {
@@ -265,15 +311,27 @@ namespace GazeboModelRobotRaconteurDriver
             {
                 vel[i] = value[_joint_names[i]];
             }
-            com.robotraconteur.geometry.SpatialVelocity? ep_vel = null;
+            com.robotraconteur.geometry.SpatialVelocity[] ep_vel = new com.robotraconteur.geometry.SpatialVelocity[rox_robots_no_limits.Length];
             try
             {
-                var rox_ep_jac = GeneralRoboticsToolbox.Functions.Robotjacobian(rox_robot, vel);
-                var rox_ep_vel = rox_ep_jac.Multiply(MathNet.Numerics.LinearAlgebra.Vector<double>.Build.DenseOfArray(vel));
+                for (int i = 0; i < _rox_robots.Length; i++)
+                {
+                    var joint_numbers = this._robot_info.chains[i].joint_numbers;
+                    double[] vel1 = new double[joint_numbers.Length];
+                    for (int j = 0; j < joint_numbers.Length; j++)
+                    {
+                        vel1[j] = vel[joint_numbers[j]];
+                    }
+                    var rox_ep_jac = GeneralRoboticsToolbox.Functions.Robotjacobian(_rox_robots[i], vel1);
+                    var rox_ep_vel = rox_ep_jac.Multiply(MathNet.Numerics.LinearAlgebra.Vector<double>.Build.DenseOfArray(vel));
 
-                ep_vel = RobotRaconteurWeb.StandardRobDefLib.Converters.GeometryConverter.ToSpatialVelocity(rox_ep_vel);
+                    ep_vel[i] = RobotRaconteur.Companion.Converters.GeometryConverter.ToSpatialVelocity(rox_ep_vel);
+                }
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                ep_vel = null;
+            }
 
 
             lock (this)

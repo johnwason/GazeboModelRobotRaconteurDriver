@@ -17,8 +17,8 @@ using System;
 using System.Collections.Generic;
 using com.robotraconteur.robotics.robot;
 using Mono.Options;
-using RobotRaconteurWeb;
-using RobotRaconteurWeb.InfoParser;
+using RobotRaconteur;
+using RobotRaconteur.Companion.InfoParser;
 
 namespace GazeboModelRobotRaconteurDriver
 {
@@ -37,8 +37,6 @@ namespace GazeboModelRobotRaconteurDriver
             var options = new OptionSet {
                 { "robot-info-file=", n => robot_info_file = n },
                 { "model-name=", "the gazebo model to control", n=> model_name=n },
-                { "robotraconteur-tcp-port=", "the tcp port to listen on", n=> tcp_port = ushort.Parse(n) },
-                { "robotraconteur-node-name=", "the NodeName", n=> node_name = n },
                 { "gazebo-url=", "url for the Robot Raconteur Gazebo plugin", n=> gazebo_url = n },
                 { "h|help", "show this message and exit", h => shouldShowHelp = h != null }
             };
@@ -102,7 +100,7 @@ namespace GazeboModelRobotRaconteurDriver
             using (robot_info.Item2)
             {                                
      
-                using (var node_setup = new ServerNodeSetup(node_name, tcp_port))
+                using (var node_setup = new ServerNodeSetup(node_name, tcp_port,args))
                 {
                     using (var robot = new GazeboRobot(robot_info.Item1, gazebo_url, model_name, robot_op_mode))
                     {
