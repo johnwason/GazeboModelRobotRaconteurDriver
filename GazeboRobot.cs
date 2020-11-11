@@ -14,9 +14,9 @@ namespace GazeboModelRobotRaconteurDriver
 
         protected internal string gazebo_url;
         protected internal string gazebo_model_name;
-        protected internal experimental.gazebo.Server gazebo_server;
-        protected internal experimental.gazebo.Model gazebo_robot;
-        protected internal experimental.gazebo.JointController gazebo_controller;
+        protected internal org.gazebosim.gazebo.Server gazebo_server;
+        protected internal org.gazebosim.gazebo.Model gazebo_robot;
+        protected internal org.gazebosim.gazebo.JointController gazebo_controller;
         protected internal Wire<Dictionary<string, double>>.WireConnection gazebo_controller_position;
         protected internal Wire<Dictionary<string,double>>.WireConnection gazebo_controller_position_command;
         protected internal Wire<Dictionary<string, double>>.WireConnection gazebo_controller_velocity;
@@ -106,15 +106,15 @@ namespace GazeboModelRobotRaconteurDriver
         {
             try
             {
-                experimental.gazebo.Server server;
-                experimental.gazebo.Model model;
-                experimental.gazebo.JointController controller;
+                org.gazebosim.gazebo.Server server;
+                org.gazebosim.gazebo.Model model;
+                org.gazebosim.gazebo.JointController controller;
                 Wire<Dictionary<string, double>>.WireConnection controller_position;
                 Wire<Dictionary<string, double>>.WireConnection controller_position_command;
                 Wire<Dictionary<string, double>>.WireConnection controller_velocity;
                 Wire<Dictionary<string, double>>.WireConnection controller_velocity_command;
 
-                experimental.gazebo.Server old_server;
+                org.gazebosim.gazebo.Server old_server;
 
                 lock (this)
                 {
@@ -146,16 +146,16 @@ namespace GazeboModelRobotRaconteurDriver
                 catch (Exception) { }
 
                 Console.WriteLine($"Begin connect to gazebo with url {gazebo_url} and model {gazebo_model_name}");
-                server = (experimental.gazebo.Server)await RobotRaconteurNode.s.AsyncConnectService(gazebo_url, null, null, _gazebo_client_listener, null);
-                var a_server = (experimental.gazebo.async_Server)server;
+                server = (org.gazebosim.gazebo.Server)await RobotRaconteurNode.s.AsyncConnectService(gazebo_url, null, null, _gazebo_client_listener, null);
+                var a_server = (org.gazebosim.gazebo.async_Server)server;
                 var w_names = await a_server.async_get_world_names();
                 var w = await a_server.async_get_worlds(w_names[0]);
-                var a_w = (experimental.gazebo.async_World)w;
+                var a_w = (org.gazebosim.gazebo.async_World)w;
                 model = await a_w.async_get_models(gazebo_model_name);
 
                 model_rr_path = RobotRaconteurNode.s.GetObjectServicePath(model);
 
-                var a_model = (experimental.gazebo.async_Model)model;
+                var a_model = (org.gazebosim.gazebo.async_Model)model;
                 try
                 {
                     await a_model.async_destroy_joint_controller();
@@ -169,7 +169,7 @@ namespace GazeboModelRobotRaconteurDriver
 
                 await a_model.async_create_kinematic_joint_controller();
                 controller = await a_model.async_get_kinematic_joint_controller();
-                var a_controller = (experimental.gazebo.async_JointController)controller;
+                var a_controller = (org.gazebosim.gazebo.async_JointController)controller;
 
                 foreach (var joint_name in _joint_names)
                 {

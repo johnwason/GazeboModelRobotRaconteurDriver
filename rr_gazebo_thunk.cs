@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 #pragma warning disable 0108
 
-namespace experimental.gazebo
+namespace org.gazebosim.gazebo
 {
 public class Contact
 {
@@ -60,8 +60,9 @@ public interface Base
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Server
+public interface Server : com.robotraconteur.device.Device
 {
+    com.robotraconteur.device.DeviceInfo device_info { get; 	}
     List<string> world_names { get; 	}
     List<string> sensor_names { get; 	}
     World get_worlds(string ind);
@@ -83,10 +84,12 @@ public interface World
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Entity : Base
+public interface Entity : Base, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string scoped_name { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     void setf_world_pose(com.robotraconteur.geometry.Pose pose);
     void setf_relative_pose(com.robotraconteur.geometry.Pose pose);
     Wire<com.robotraconteur.geometry.Pose> world_pose{ get; set; }
@@ -98,13 +101,15 @@ public interface Entity : Base
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Model : Entity, Base
+public interface Model : Entity, Base, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string scoped_name { get; 	}
     List<string> child_model_names { get; 	}
     List<string> link_names { get; 	}
     List<string> joint_names { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     void setf_world_pose(com.robotraconteur.geometry.Pose pose);
     void setf_relative_pose(com.robotraconteur.geometry.Pose pose);
     void create_joint_controller();
@@ -125,11 +130,13 @@ public interface Model : Entity, Base
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Link : Entity, Base
+public interface Link : Entity, Base, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string scoped_name { get; 	}
     List<string> sensor_names { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     void setf_world_pose(com.robotraconteur.geometry.Pose pose);
     void setf_relative_pose(com.robotraconteur.geometry.Pose pose);
     Wire<com.robotraconteur.geometry.Pose> world_pose{ get; set; }
@@ -142,13 +149,15 @@ public interface Link : Entity, Base
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Joint : Base
+public interface Joint : Base, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string scoped_name { get; 	}
     string parent_link_name { get; 	}
     string child_link_name { get; 	}
     uint dof { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     com.robotraconteur.geometry.Vector3[] getf_global_axes();
     com.robotraconteur.geometry.Vector3[] getf_local_axes();
     void setf_axis_position(uint axis, double position);
@@ -161,11 +170,13 @@ public interface Joint : Base
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface JointController
+public interface JointController : com.robotraconteur.device.isoch.IsochDevice
 {
     List<string> joint_names { get; 	}
     Dictionary<string,com.robotraconteur.pid.PIDParam> position_pid { get; 	}
     Dictionary<string,com.robotraconteur.pid.PIDParam> velocity_pid { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     void add_joint(string name);
     void setf_position_pid(string name, com.robotraconteur.pid.PIDParam pid);
     void setf_velocity_pid(string name, com.robotraconteur.pid.PIDParam pid);
@@ -177,7 +188,7 @@ public interface JointController
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Sensor
+public interface Sensor : com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -187,10 +198,12 @@ public interface Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface CameraSensor : Sensor
+public interface CameraSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -200,12 +213,14 @@ public interface CameraSensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     com.robotraconteur.image.Image capture_image();
     Pipe<com.robotraconteur.image.Image> image_stream{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface MultiCameraSensor : Sensor
+public interface MultiCameraSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -216,12 +231,14 @@ public interface MultiCameraSensor : Sensor
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
     int camera_count { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     com.robotraconteur.image.Image capture_image(int ind);
     Pipe<Dictionary<int,com.robotraconteur.image.Image>> image_stream{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface DepthCameraSensor : Sensor
+public interface DepthCameraSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -231,12 +248,14 @@ public interface DepthCameraSensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     com.robotraconteur.image.DepthImage capture_image();
     Pipe<com.robotraconteur.image.DepthImage> image_stream{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface RaySensor : Sensor
+public interface RaySensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -246,12 +265,14 @@ public interface RaySensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     com.robotraconteur.laserscan.LaserScan capture_scan();
     Pipe<com.robotraconteur.laserscan.LaserScan> scan_stream{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface ContactSensor : Sensor
+public interface ContactSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -261,11 +282,13 @@ public interface ContactSensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     Wire<List<Contact>> contacts{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface AltimeterSensor : Sensor
+public interface AltimeterSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -275,11 +298,13 @@ public interface AltimeterSensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     Wire<double> altitude{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface SonarSensor : Sensor
+public interface SonarSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -292,11 +317,13 @@ public interface SonarSensor : Sensor
     double range_min { get; 	}
     double range_max { get; 	}
     double radius { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     Wire<double> range{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface MagnetometerSensor : Sensor
+public interface MagnetometerSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -306,11 +333,13 @@ public interface MagnetometerSensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     Wire<com.robotraconteur.geometry.Vector3> magnetic_field{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface ForceTorqueSensor : Sensor
+public interface ForceTorqueSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -320,11 +349,13 @@ public interface ForceTorqueSensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     Wire<com.robotraconteur.geometry.Wrench> force_torque{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface GpsSensor : Sensor
+public interface GpsSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -334,11 +365,13 @@ public interface GpsSensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     Wire<com.robotraconteur.gps.GpsState> state{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface ImuSensor : Sensor
+public interface ImuSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
 {
     string name { get; 	}
     string type { get; 	}
@@ -348,8 +381,27 @@ public interface ImuSensor : Sensor
     double update_rate { get;  set; 	}
     com.robotraconteur.datetime.Duration last_update_time { get; 	}
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
     void setf_reference_pose();
     Wire<com.robotraconteur.imu.ImuState> state{ get; set; }
+}
+
+[RobotRaconteurServiceObjectInterface()]
+public interface LogicalCameraSensor : Sensor, com.robotraconteur.device.isoch.IsochDevice
+{
+    string name { get; 	}
+    string type { get; 	}
+    string parent_name { get; 	}
+    com.robotraconteur.geometry.Pose pose { get; 	}
+    bool active { get;  set; 	}
+    double update_rate { get;  set; 	}
+    com.robotraconteur.datetime.Duration last_update_time { get; 	}
+    com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
+    com.robotraconteur.objectrecognition.RecognizedObjects capture_image();
+    Pipe<com.robotraconteur.objectrecognition.RecognizedObjects> image_stream{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
@@ -364,20 +416,20 @@ public interface Light
 }
 
 }
-namespace experimental.gazebo
+namespace org.gazebosim.gazebo
 {
-public class experimental__gazeboFactory : ServiceFactory
+public class org__gazebosim__gazeboFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service experimental.gazebo\n\nstdver 0.10\n\nimport com.robotraconteur.geometry\nimport com.robotraconteur.image\nimport com.robotraconteur.color\nimport com.robotraconteur.datetime\nimport com.robotraconteur.laserscan\nimport com.robotraconteur.pid\nimport com.robotraconteur.gps\nimport com.robotraconteur.imu\n\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.Quaternion\nusing com.robotraconteur.geometry.Pose\nusing com.robotraconteur.geometry.SpatialVelocity\nusing com.robotraconteur.geometry.SpatialAcceleration\nusing com.robotraconteur.geometry.Wrench\nusing com.robotraconteur.image.Image\nusing com.robotraconteur.image.DepthImage\nusing com.robotraconteur.color.ColorRGBAf as Color\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.datetime.Duration\nusing com.robotraconteur.laserscan.LaserScan\nusing com.robotraconteur.pid.PIDParam\nusing com.robotraconteur.gps.GpsState\nusing com.robotraconteur.imu.ImuState\n\nstruct Contact\nfield string contact_name1\nfield string contact_name2\nend\n\nobject Base\nproperty string name [readonly]\nproperty string scoped_name [readonly]\nend\n\nobject Server\nproperty string{list} world_names [readonly]\nobjref World{string} worlds\n\nproperty string{list} sensor_names [readonly]\nobjref Sensor{string} sensors\nend\n\nstruct WorldTimes\nfield Duration sim_time\nfield Duration real_time\nfield DateTimeUTC wall_time\nfield DateTimeUTC start_time\nend\n\nobject World\nproperty string name [readonly]\n\nwire Duration sim_time [readonly]\nwire WorldTimes time [readonly]\n\nproperty string{list} model_names [readonly]\nobjref Model{string} models\n\nproperty string{list} light_names [readonly]\nobjref Light{string} lights\n\nfunction void insert_model(string model_sdf, string model_name, Pose model_pose)\nfunction void remove_model(string model_name)\n\nend\n\nobject Entity\nimplements Base\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\nend\n\nobject Model\nimplements Entity\nimplements Base\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string{list} child_model_names [readonly]\nobjref Model{string} child_models\n\nproperty string{list} link_names [readonly]\nobjref Link{string} links\n\nproperty string{list} joint_names [readonly]\nobjref Joint{string} joints\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nfunction void create_joint_controller()\nfunction void destroy_joint_controller()\n\nobjref JointController joint_controller\n\nfunction void create_kinematic_joint_controller()\nfunction void destroy_kinematic_joint_controller()\n\nobjref JointController kinematic_joint_controller\n\nend\n\nobject Link\nimplements Entity\nimplements Base\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string{list} sensor_names [readonly]\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nwire Wrench{list} applied_wrenches [writeonly]\nend\n\nnamedarray JointWrench\nfield Wrench body1_wrench\nfield Wrench body2_wrench\nend\n\nobject Joint\nimplements Base\n\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string parent_link_name [readonly]\nproperty string child_link_name [readonly]\n\nproperty uint32 dof [readonly]\n\nfunction Vector3[] getf_global_axes()\nfunction Vector3[] getf_local_axes()\n\nwire double[] axes_position [readonly]\nwire double[] axes_velocity [readonly]\nwire double[] axes_force [readonly]\n\nfunction void setf_axis_position(uint32 axis, double position)\nfunction void setf_axis_velocity(uint32 axis, double vel)\n\nwire JointWrench force_torque [readonly]\n\nwire double[] apply_axes_force [writeonly]\n\nend\n\nobject JointController\nproperty string{list} joint_names [readonly]\nproperty PIDParam{string} position_pid [readonly]\nproperty PIDParam{string} velocity_pid [readonly]\nwire double{string} joint_position [readonly]\nwire double{string} joint_velocity [readonly]\nwire double{string} joint_position_command [writeonly]\nwire double{string} joint_velocity_command [writeonly]\n\nwire double{string} joint_forces [readonly]\n\nfunction void add_joint(string name)\nfunction void setf_position_pid(string name, PIDParam pid)\nfunction void setf_velocity_pid(string name, PIDParam pid)\nend\n\nobject Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\nend\n\nobject CameraSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction Image capture_image()\npipe Image image_stream [readonly]\nend\n\nobject MultiCameraSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nproperty int32 camera_count [readonly]\nfunction Image capture_image(int32 ind)\npipe Image{int32} image_stream [readonly]\nend\n\nobject DepthCameraSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction DepthImage capture_image()\npipe DepthImage image_stream [readonly]\nend\n\nobject RaySensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction LaserScan capture_scan()\npipe LaserScan scan_stream [readonly]\nend\n\nobject ContactSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Contact{list} contacts [readonly]\nend\n\nobject AltimeterSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire double altitude [readonly]\nend\n\nobject SonarSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nproperty double range_min [readonly]\nproperty double range_max [readonly]\nproperty double radius [readonly]\n\nwire double range [readonly]\nend\n\nobject MagnetometerSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Vector3 magnetic_field [readonly]\nend\n\nobject ForceTorqueSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Wrench force_torque [readonly]\nend\n\nobject GpsSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire GpsState state [readonly]\nend\n\nobject ImuSensor\nimplements Sensor\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nfunction void setf_reference_pose()\n\nwire ImuState state [readonly]\nend\n\nobject Light\nproperty string name [readonly]\nproperty string type [readonly]\nproperty Pose pose [readonly]\nproperty Vector3 direction [readonly]\n\nproperty Color diffuse_color\nproperty Color specular_color\nend\n";
+    const string s="service org.gazebosim.gazebo\n\nstdver 0.10\n\nimport com.robotraconteur.geometry\nimport com.robotraconteur.image\nimport com.robotraconteur.color\nimport com.robotraconteur.datetime\nimport com.robotraconteur.laserscan\nimport com.robotraconteur.pid\nimport com.robotraconteur.gps\nimport com.robotraconteur.imu\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.objectrecognition\n\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.Quaternion\nusing com.robotraconteur.geometry.Pose\nusing com.robotraconteur.geometry.SpatialVelocity\nusing com.robotraconteur.geometry.SpatialAcceleration\nusing com.robotraconteur.geometry.Wrench\nusing com.robotraconteur.image.Image\nusing com.robotraconteur.image.DepthImage\nusing com.robotraconteur.color.ColorRGBAf as Color\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.datetime.Duration\nusing com.robotraconteur.laserscan.LaserScan\nusing com.robotraconteur.pid.PIDParam\nusing com.robotraconteur.gps.GpsState\nusing com.robotraconteur.imu.ImuState\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.objectrecognition.RecognizedObjects\n\nstruct Contact\nfield string contact_name1\nfield string contact_name2\nend\n\nobject Base\nproperty string name [readonly]\nproperty string scoped_name [readonly]\nend\n\nobject Server\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\n\nproperty string{list} world_names [readonly]\nobjref World{string} worlds\n\nproperty string{list} sensor_names [readonly]\nobjref Sensor{string} sensors\nend\n\nstruct WorldTimes\nfield Duration sim_time\nfield Duration real_time\nfield DateTimeUTC wall_time\nfield DateTimeUTC start_time\nend\n\nobject World\nproperty string name [readonly]\n\nwire Duration sim_time [readonly]\nwire WorldTimes time [readonly]\n\nproperty string{list} model_names [readonly]\nobjref Model{string} models\n\nproperty string{list} light_names [readonly]\nobjref Light{string} lights\n\nfunction void insert_model(string model_sdf, string model_name, Pose model_pose)\nfunction void remove_model(string model_name)\n\nend\n\nobject Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Model\nimplements Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string{list} child_model_names [readonly]\nobjref Model{string} child_models\n\nproperty string{list} link_names [readonly]\nobjref Link{string} links\n\nproperty string{list} joint_names [readonly]\nobjref Joint{string} joints\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nfunction void create_joint_controller()\nfunction void destroy_joint_controller()\n\nobjref JointController joint_controller\n\nfunction void create_kinematic_joint_controller()\nfunction void destroy_kinematic_joint_controller()\n\nobjref JointController kinematic_joint_controller\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\n\nend\n\nobject Link\nimplements Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string{list} sensor_names [readonly]\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nwire Wrench{list} applied_wrenches [writeonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nnamedarray JointWrench\nfield Wrench body1_wrench\nfield Wrench body2_wrench\nend\n\nobject Joint\nimplements Base\nimplements IsochDevice\n\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string parent_link_name [readonly]\nproperty string child_link_name [readonly]\n\nproperty uint32 dof [readonly]\n\nfunction Vector3[] getf_global_axes()\nfunction Vector3[] getf_local_axes()\n\nwire double[] axes_position [readonly]\nwire double[] axes_velocity [readonly]\nwire double[] axes_force [readonly]\n\nfunction void setf_axis_position(uint32 axis, double position)\nfunction void setf_axis_velocity(uint32 axis, double vel)\n\nwire JointWrench force_torque [readonly]\n\nwire double[] apply_axes_force [writeonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\n\nend\n\nobject JointController\nimplements IsochDevice\nproperty string{list} joint_names [readonly]\nproperty PIDParam{string} position_pid [readonly]\nproperty PIDParam{string} velocity_pid [readonly]\nwire double{string} joint_position [readonly]\nwire double{string} joint_velocity [readonly]\nwire double{string} joint_position_command [writeonly]\nwire double{string} joint_velocity_command [writeonly]\n\nwire double{string} joint_forces [readonly]\n\nfunction void add_joint(string name)\nfunction void setf_position_pid(string name, PIDParam pid)\nfunction void setf_velocity_pid(string name, PIDParam pid)\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject CameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction Image capture_image()\npipe Image image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject MultiCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nproperty int32 camera_count [readonly]\nfunction Image capture_image(int32 ind)\npipe Image{int32} image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject DepthCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction DepthImage capture_image()\npipe DepthImage image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject RaySensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction LaserScan capture_scan()\npipe LaserScan scan_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ContactSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Contact{list} contacts [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject AltimeterSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire double altitude [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject SonarSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nproperty double range_min [readonly]\nproperty double range_max [readonly]\nproperty double radius [readonly]\n\nwire double range [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject MagnetometerSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Vector3 magnetic_field [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ForceTorqueSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Wrench force_torque [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject GpsSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire GpsState state [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ImuSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nfunction void setf_reference_pose()\n\nwire ImuState state [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject LogicalCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction RecognizedObjects capture_image()\npipe RecognizedObjects image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Light\nproperty string name [readonly]\nproperty string type [readonly]\nproperty Pose pose [readonly]\nproperty Vector3 direction [readonly]\n\nproperty Color diffuse_color\nproperty Color specular_color\nend\n";
     return s;
     }
-    public override string GetServiceName() {return "experimental.gazebo";}
+    public override string GetServiceName() {return "org.gazebosim.gazebo";}
     public Contact_stub Contact_stubentry;
     public WorldTimes_stub WorldTimes_stubentry;
     public JointWrench_stub JointWrench_stubentry;
-    public experimental__gazeboFactory()
+    public org__gazebosim__gazeboFactory()
 {
     Contact_stubentry=new Contact_stub(this);
     WorldTimes_stubentry=new WorldTimes_stub(this);
@@ -442,6 +494,8 @@ public class experimental__gazeboFactory : ServiceFactory
     return new GpsSensor_stub(innerstub);
     case "ImuSensor":
     return new ImuSensor_stub(innerstub);
+    case "LogicalCameraSensor":
+    return new LogicalCameraSensor_stub(innerstub);
     case "Light":
     return new Light_stub(innerstub);
     default:
@@ -498,6 +552,8 @@ public class experimental__gazeboFactory : ServiceFactory
     return new GpsSensor_skel((GpsSensor)obj);
     case "ImuSensor":
     return new ImuSensor_skel((ImuSensor)obj);
+    case "LogicalCameraSensor":
+    return new LogicalCameraSensor_skel((LogicalCameraSensor)obj);
     case "Light":
     return new Light_skel((Light)obj);
     default:
@@ -523,8 +579,8 @@ public class experimental__gazeboFactory : ServiceFactory
 }
 
 public class Contact_stub : IStructureStub {
-    public Contact_stub(experimental__gazeboFactory d) {def=d;}
-    private experimental__gazeboFactory def;
+    public Contact_stub(org__gazebosim__gazeboFactory d) {def=d;}
+    private org__gazebosim__gazeboFactory def;
     public MessageElementNestedElementList PackStructure(object s1) {
     using(vectorptr_messageelement m=new vectorptr_messageelement())
     {
@@ -532,7 +588,7 @@ public class Contact_stub : IStructureStub {
     Contact s = (Contact)s1;
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackString("contact_name1",s.contact_name1));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackString("contact_name2",s.contact_name2));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"experimental.gazebo.Contact",m);
+    return new MessageElementNestedElementList(DataTypes.structure_t,"org.gazebosim.gazebo.Contact",m);
     }
     }
     public T UnpackStructure<T>(MessageElementNestedElementList m) {
@@ -549,8 +605,8 @@ public class Contact_stub : IStructureStub {
 }
 
 public class WorldTimes_stub : IStructureStub {
-    public WorldTimes_stub(experimental__gazeboFactory d) {def=d;}
-    private experimental__gazeboFactory def;
+    public WorldTimes_stub(org__gazebosim__gazeboFactory d) {def=d;}
+    private org__gazebosim__gazeboFactory def;
     public MessageElementNestedElementList PackStructure(object s1) {
     using(vectorptr_messageelement m=new vectorptr_messageelement())
     {
@@ -560,7 +616,7 @@ public class WorldTimes_stub : IStructureStub {
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("real_time",ref s.real_time));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.DateTimeUTC>("wall_time",ref s.wall_time));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.DateTimeUTC>("start_time",ref s.start_time));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"experimental.gazebo.WorldTimes",m);
+    return new MessageElementNestedElementList(DataTypes.structure_t,"org.gazebosim.gazebo.WorldTimes",m);
     }
     }
     public T UnpackStructure<T>(MessageElementNestedElementList m) {
@@ -599,7 +655,7 @@ public class JointWrench_stub : NamedArrayStub<JointWrench,double> {
     s.AssignFromNumericArray(ref a);
     return s;
     }
-    public override string TypeName { get { return "experimental.gazebo.JointWrench"; } }}
+    public override string TypeName { get { return "org.gazebosim.gazebo.JointWrench"; } }}
 
 public interface async_Base
 {
@@ -645,8 +701,9 @@ public class Base_stub : ServiceStub , Base, async_Base{
     return rr_ret;
     } }
 }
-public interface async_Server
+public interface async_Server : com.robotraconteur.device.async_Device
 {
+    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<List<string>> async_get_world_names(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<List<string>> async_get_sensor_names(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<World> async_get_worlds(string ind, int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -654,6 +711,11 @@ public interface async_Server
 }
 public class Server_stub : ServiceStub , Server, async_Server{
     public Server_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    }
+    public com.robotraconteur.device.DeviceInfo device_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
+    }
     }
     public List<string> world_names {
     get {
@@ -672,10 +734,10 @@ public class Server_stub : ServiceStub , Server, async_Server{
     }
     }
     public World get_worlds(string ind) {
-    return (World)FindObjRefTyped("worlds",ind.ToString(),"experimental.gazebo.World");
+    return (World)FindObjRefTyped("worlds",ind.ToString(),"org.gazebosim.gazebo.World");
     }
     public Sensor get_sensors(string ind) {
-    return (Sensor)FindObjRefTyped("sensors",ind.ToString(),"experimental.gazebo.Sensor");
+    return (Sensor)FindObjRefTyped("sensors",ind.ToString(),"org.gazebosim.gazebo.Sensor");
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
     switch (rr_membername) {
@@ -684,6 +746,12 @@ public class Server_stub : ServiceStub , Server, async_Server{
     }
     throw new MemberNotFoundException("Member not found");
     }
+    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
+    return rr_ret;
+    } }
     public virtual async Task<List<string>> async_get_world_names(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(var rr_value = await rr_async_PropertyGet("world_names",rr_timeout)) {
@@ -698,11 +766,11 @@ public class Server_stub : ServiceStub , Server, async_Server{
     } }
     public Task<World>  async_get_worlds(string ind, int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<World>("worlds",ind.ToString(),"experimental.gazebo.World",timeout);
+    return AsyncFindObjRefTyped<World>("worlds",ind.ToString(),"org.gazebosim.gazebo.World",timeout);
     }
     public Task<Sensor>  async_get_sensors(string ind, int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<Sensor>("sensors",ind.ToString(),"experimental.gazebo.Sensor",timeout);
+    return AsyncFindObjRefTyped<Sensor>("sensors",ind.ToString(),"org.gazebosim.gazebo.Sensor",timeout);
     }
 }
 public interface async_World
@@ -764,10 +832,10 @@ public class World_stub : ServiceStub , World, async_World{
     }
     }
     public Model get_models(string ind) {
-    return (Model)FindObjRefTyped("models",ind.ToString(),"experimental.gazebo.Model");
+    return (Model)FindObjRefTyped("models",ind.ToString(),"org.gazebosim.gazebo.Model");
     }
     public Light get_lights(string ind) {
-    return (Light)FindObjRefTyped("lights",ind.ToString(),"experimental.gazebo.Light");
+    return (Light)FindObjRefTyped("lights",ind.ToString(),"org.gazebosim.gazebo.Light");
     }
     public Wire<com.robotraconteur.datetime.Duration> sim_time {
     get { return rr_sim_time;  }
@@ -820,17 +888,20 @@ public class World_stub : ServiceStub , World, async_World{
     } } }
     public Task<Model>  async_get_models(string ind, int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<Model>("models",ind.ToString(),"experimental.gazebo.Model",timeout);
+    return AsyncFindObjRefTyped<Model>("models",ind.ToString(),"org.gazebosim.gazebo.Model",timeout);
     }
     public Task<Light>  async_get_lights(string ind, int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<Light>("lights",ind.ToString(),"experimental.gazebo.Light",timeout);
+    return AsyncFindObjRefTyped<Light>("lights",ind.ToString(),"org.gazebosim.gazebo.Light",timeout);
     }
 }
-public interface async_Entity : async_Base
+public interface async_Entity : async_Base, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_scoped_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_world_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_relative_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
@@ -857,6 +928,22 @@ public class Entity_stub : ServiceStub , Entity, async_Entity{
     public string scoped_name {
     get {
     return MessageElementUtil.UnpackString(rr_innerstub.PropertyGet("scoped_name"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public void setf_world_pose(com.robotraconteur.geometry.Pose pose) {
@@ -926,6 +1013,25 @@ public class Entity_stub : ServiceStub , Entity, async_Entity{
     var rr_ret=MessageElementUtil.UnpackString(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task async_setf_world_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -941,13 +1047,16 @@ public class Entity_stub : ServiceStub , Entity, async_Entity{
     using(var rr_return = await rr_async_FunctionCall("setf_relative_pose",rr_param,rr_timeout)) {
     } } }
 }
-public interface async_Model : async_Entity, async_Base
+public interface async_Model : async_Entity, async_Base, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_scoped_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<List<string>> async_get_child_model_names(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<List<string>> async_get_link_names(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<List<string>> async_get_joint_names(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_world_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_relative_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_create_joint_controller(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -998,6 +1107,22 @@ public class Model_stub : ServiceStub , Model, async_Model{
     public List<string> joint_names {
     get {
     return MessageElementUtil.UnpackList<string>(rr_innerstub.PropertyGet("joint_names"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public void setf_world_pose(com.robotraconteur.geometry.Pose pose) {
@@ -1057,19 +1182,19 @@ public class Model_stub : ServiceStub , Model, async_Model{
     }
     }
     public Model get_child_models(string ind) {
-    return (Model)FindObjRefTyped("child_models",ind.ToString(),"experimental.gazebo.Model");
+    return (Model)FindObjRefTyped("child_models",ind.ToString(),"org.gazebosim.gazebo.Model");
     }
     public Link get_links(string ind) {
-    return (Link)FindObjRefTyped("links",ind.ToString(),"experimental.gazebo.Link");
+    return (Link)FindObjRefTyped("links",ind.ToString(),"org.gazebosim.gazebo.Link");
     }
     public Joint get_joints(string ind) {
-    return (Joint)FindObjRefTyped("joints",ind.ToString(),"experimental.gazebo.Joint");
+    return (Joint)FindObjRefTyped("joints",ind.ToString(),"org.gazebosim.gazebo.Joint");
     }
     public JointController get_joint_controller() {
-    return (JointController)FindObjRefTyped("joint_controller","experimental.gazebo.JointController");
+    return (JointController)FindObjRefTyped("joint_controller","org.gazebosim.gazebo.JointController");
     }
     public JointController get_kinematic_joint_controller() {
-    return (JointController)FindObjRefTyped("kinematic_joint_controller","experimental.gazebo.JointController");
+    return (JointController)FindObjRefTyped("kinematic_joint_controller","org.gazebosim.gazebo.JointController");
     }
     public Wire<com.robotraconteur.geometry.Pose> world_pose {
     get { return rr_world_pose;  }
@@ -1132,6 +1257,25 @@ public class Model_stub : ServiceStub , Model, async_Model{
     var rr_ret=MessageElementUtil.UnpackList<string>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task async_setf_world_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -1172,30 +1316,33 @@ public class Model_stub : ServiceStub , Model, async_Model{
     } } }
     public Task<Model>  async_get_child_models(string ind, int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<Model>("child_models",ind.ToString(),"experimental.gazebo.Model",timeout);
+    return AsyncFindObjRefTyped<Model>("child_models",ind.ToString(),"org.gazebosim.gazebo.Model",timeout);
     }
     public Task<Link>  async_get_links(string ind, int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<Link>("links",ind.ToString(),"experimental.gazebo.Link",timeout);
+    return AsyncFindObjRefTyped<Link>("links",ind.ToString(),"org.gazebosim.gazebo.Link",timeout);
     }
     public Task<Joint>  async_get_joints(string ind, int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<Joint>("joints",ind.ToString(),"experimental.gazebo.Joint",timeout);
+    return AsyncFindObjRefTyped<Joint>("joints",ind.ToString(),"org.gazebosim.gazebo.Joint",timeout);
     }
     public Task<JointController> async_get_joint_controller(int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<JointController>("joint_controller","experimental.gazebo.JointController",timeout);
+    return AsyncFindObjRefTyped<JointController>("joint_controller","org.gazebosim.gazebo.JointController",timeout);
     }
     public Task<JointController> async_get_kinematic_joint_controller(int timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
-    return AsyncFindObjRefTyped<JointController>("kinematic_joint_controller","experimental.gazebo.JointController",timeout);
+    return AsyncFindObjRefTyped<JointController>("kinematic_joint_controller","org.gazebosim.gazebo.JointController",timeout);
     }
 }
-public interface async_Link : async_Entity, async_Base
+public interface async_Link : async_Entity, async_Base, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_scoped_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<List<string>> async_get_sensor_names(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_world_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_relative_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
@@ -1229,6 +1376,22 @@ public class Link_stub : ServiceStub , Link, async_Link{
     public List<string> sensor_names {
     get {
     return MessageElementUtil.UnpackList<string>(rr_innerstub.PropertyGet("sensor_names"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public void setf_world_pose(com.robotraconteur.geometry.Pose pose) {
@@ -1308,6 +1471,25 @@ public class Link_stub : ServiceStub , Link, async_Link{
     var rr_ret=MessageElementUtil.UnpackList<string>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task async_setf_world_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -1323,13 +1505,16 @@ public class Link_stub : ServiceStub , Link, async_Link{
     using(var rr_return = await rr_async_FunctionCall("setf_relative_pose",rr_param,rr_timeout)) {
     } } }
 }
-public interface async_Joint : async_Base
+public interface async_Joint : async_Base, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_scoped_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_parent_link_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_child_link_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<uint> async_get_dof(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.geometry.Vector3[]> async_getf_global_axes(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.geometry.Vector3[]> async_getf_local_axes(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_axis_position(uint axis, double position,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -1371,6 +1556,22 @@ public class Joint_stub : ServiceStub , Joint, async_Joint{
     public uint dof {
     get {
     return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("dof")));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public com.robotraconteur.geometry.Vector3[] getf_global_axes() {
@@ -1474,6 +1675,25 @@ public class Joint_stub : ServiceStub , Joint, async_Joint{
     var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task<com.robotraconteur.geometry.Vector3[]> async_getf_global_axes(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -1507,11 +1727,14 @@ public class Joint_stub : ServiceStub , Joint, async_Joint{
     using(var rr_return = await rr_async_FunctionCall("setf_axis_velocity",rr_param,rr_timeout)) {
     } } }
 }
-public interface async_JointController
+public interface async_JointController : com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<List<string>> async_get_joint_names(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<Dictionary<string,com.robotraconteur.pid.PIDParam>> async_get_position_pid(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<Dictionary<string,com.robotraconteur.pid.PIDParam>> async_get_velocity_pid(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_add_joint(string name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_position_pid(string name, com.robotraconteur.pid.PIDParam pid,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_velocity_pid(string name, com.robotraconteur.pid.PIDParam pid,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -1542,6 +1765,22 @@ public class JointController_stub : ServiceStub , JointController, async_JointCo
     public Dictionary<string,com.robotraconteur.pid.PIDParam> velocity_pid {
     get {
     return MessageElementUtil.UnpackMap<string,com.robotraconteur.pid.PIDParam>(rr_innerstub.PropertyGet("velocity_pid"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public void add_joint(string name) {
@@ -1624,6 +1863,25 @@ public class JointController_stub : ServiceStub , JointController, async_JointCo
     var rr_ret=MessageElementUtil.UnpackMap<string,com.robotraconteur.pid.PIDParam>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task async_add_joint(string name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -1648,7 +1906,7 @@ public class JointController_stub : ServiceStub , JointController, async_JointCo
     using(var rr_return = await rr_async_FunctionCall("setf_velocity_pid",rr_param,rr_timeout)) {
     } } }
 }
-public interface async_Sensor
+public interface async_Sensor : com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -1660,6 +1918,9 @@ public interface async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class Sensor_stub : ServiceStub , Sensor, async_Sensor{
     public Sensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
@@ -1714,6 +1975,22 @@ public class Sensor_stub : ServiceStub , Sensor, async_Sensor{
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
@@ -1791,8 +2068,27 @@ public class Sensor_stub : ServiceStub , Sensor, async_Sensor{
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
 }
-public interface async_CameraSensor : async_Sensor
+public interface async_CameraSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -1804,6 +2100,9 @@ public interface async_CameraSensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.image.Image> async_capture_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class CameraSensor_stub : ServiceStub , CameraSensor, async_CameraSensor{
@@ -1861,6 +2160,22 @@ public class CameraSensor_stub : ServiceStub , CameraSensor, async_CameraSensor{
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public com.robotraconteur.image.Image capture_image() {
@@ -1951,6 +2266,25 @@ public class CameraSensor_stub : ServiceStub , CameraSensor, async_CameraSensor{
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task<com.robotraconteur.image.Image> async_capture_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -1960,7 +2294,7 @@ public class CameraSensor_stub : ServiceStub , CameraSensor, async_CameraSensor{
     return rr_ret;
     } } }
 }
-public interface async_MultiCameraSensor : async_Sensor
+public interface async_MultiCameraSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -1973,6 +2307,9 @@ public interface async_MultiCameraSensor : async_Sensor
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<int> async_get_camera_count(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.image.Image> async_capture_image(int ind,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class MultiCameraSensor_stub : ServiceStub , MultiCameraSensor, async_MultiCameraSensor{
@@ -2035,6 +2372,22 @@ public class MultiCameraSensor_stub : ServiceStub , MultiCameraSensor, async_Mul
     public int camera_count {
     get {
     return (MessageElementUtil.UnpackScalar<int>(rr_innerstub.PropertyGet("camera_count")));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public com.robotraconteur.image.Image capture_image(int ind) {
@@ -2132,6 +2485,25 @@ public class MultiCameraSensor_stub : ServiceStub , MultiCameraSensor, async_Mul
     var rr_ret=(MessageElementUtil.UnpackScalar<int>(rr_value));
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task<com.robotraconteur.image.Image> async_capture_image(int ind,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -2142,7 +2514,7 @@ public class MultiCameraSensor_stub : ServiceStub , MultiCameraSensor, async_Mul
     return rr_ret;
     } } }
 }
-public interface async_DepthCameraSensor : async_Sensor
+public interface async_DepthCameraSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -2154,6 +2526,9 @@ public interface async_DepthCameraSensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.image.DepthImage> async_capture_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class DepthCameraSensor_stub : ServiceStub , DepthCameraSensor, async_DepthCameraSensor{
@@ -2211,6 +2586,22 @@ public class DepthCameraSensor_stub : ServiceStub , DepthCameraSensor, async_Dep
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public com.robotraconteur.image.DepthImage capture_image() {
@@ -2301,6 +2692,25 @@ public class DepthCameraSensor_stub : ServiceStub , DepthCameraSensor, async_Dep
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task<com.robotraconteur.image.DepthImage> async_capture_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -2310,7 +2720,7 @@ public class DepthCameraSensor_stub : ServiceStub , DepthCameraSensor, async_Dep
     return rr_ret;
     } } }
 }
-public interface async_RaySensor : async_Sensor
+public interface async_RaySensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -2322,6 +2732,9 @@ public interface async_RaySensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.laserscan.LaserScan> async_capture_scan(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class RaySensor_stub : ServiceStub , RaySensor, async_RaySensor{
@@ -2379,6 +2792,22 @@ public class RaySensor_stub : ServiceStub , RaySensor, async_RaySensor{
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public com.robotraconteur.laserscan.LaserScan capture_scan() {
@@ -2469,6 +2898,25 @@ public class RaySensor_stub : ServiceStub , RaySensor, async_RaySensor{
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task<com.robotraconteur.laserscan.LaserScan> async_capture_scan(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
@@ -2478,7 +2926,7 @@ public class RaySensor_stub : ServiceStub , RaySensor, async_RaySensor{
     return rr_ret;
     } } }
 }
-public interface async_ContactSensor : async_Sensor
+public interface async_ContactSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -2490,6 +2938,9 @@ public interface async_ContactSensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class ContactSensor_stub : ServiceStub , ContactSensor, async_ContactSensor{
     private Wire<List<Contact>> rr_contacts;
@@ -2546,6 +2997,22 @@ public class ContactSensor_stub : ServiceStub , ContactSensor, async_ContactSens
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
@@ -2627,8 +3094,27 @@ public class ContactSensor_stub : ServiceStub , ContactSensor, async_ContactSens
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
 }
-public interface async_AltimeterSensor : async_Sensor
+public interface async_AltimeterSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -2640,6 +3126,9 @@ public interface async_AltimeterSensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class AltimeterSensor_stub : ServiceStub , AltimeterSensor, async_AltimeterSensor{
     private Wire<double> rr_altitude;
@@ -2696,6 +3185,22 @@ public class AltimeterSensor_stub : ServiceStub , AltimeterSensor, async_Altimet
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
@@ -2777,8 +3282,27 @@ public class AltimeterSensor_stub : ServiceStub , AltimeterSensor, async_Altimet
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
 }
-public interface async_SonarSensor : async_Sensor
+public interface async_SonarSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -2793,6 +3317,9 @@ public interface async_SonarSensor : async_Sensor
     Task<double> async_get_range_min(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<double> async_get_range_max(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<double> async_get_radius(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class SonarSensor_stub : ServiceStub , SonarSensor, async_SonarSensor{
     private Wire<double> rr_range;
@@ -2864,6 +3391,22 @@ public class SonarSensor_stub : ServiceStub , SonarSensor, async_SonarSensor{
     public double radius {
     get {
     return (MessageElementUtil.UnpackScalar<double>(rr_innerstub.PropertyGet("radius")));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
@@ -2963,8 +3506,27 @@ public class SonarSensor_stub : ServiceStub , SonarSensor, async_SonarSensor{
     var rr_ret=(MessageElementUtil.UnpackScalar<double>(rr_value));
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
 }
-public interface async_MagnetometerSensor : async_Sensor
+public interface async_MagnetometerSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -2976,6 +3538,9 @@ public interface async_MagnetometerSensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class MagnetometerSensor_stub : ServiceStub , MagnetometerSensor, async_MagnetometerSensor{
     private Wire<com.robotraconteur.geometry.Vector3> rr_magnetic_field;
@@ -3032,6 +3597,22 @@ public class MagnetometerSensor_stub : ServiceStub , MagnetometerSensor, async_M
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
@@ -3113,8 +3694,27 @@ public class MagnetometerSensor_stub : ServiceStub , MagnetometerSensor, async_M
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
 }
-public interface async_ForceTorqueSensor : async_Sensor
+public interface async_ForceTorqueSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -3126,6 +3726,9 @@ public interface async_ForceTorqueSensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class ForceTorqueSensor_stub : ServiceStub , ForceTorqueSensor, async_ForceTorqueSensor{
     private Wire<com.robotraconteur.geometry.Wrench> rr_force_torque;
@@ -3182,6 +3785,22 @@ public class ForceTorqueSensor_stub : ServiceStub , ForceTorqueSensor, async_For
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
@@ -3263,8 +3882,27 @@ public class ForceTorqueSensor_stub : ServiceStub , ForceTorqueSensor, async_For
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
 }
-public interface async_GpsSensor : async_Sensor
+public interface async_GpsSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -3276,6 +3914,9 @@ public interface async_GpsSensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class GpsSensor_stub : ServiceStub , GpsSensor, async_GpsSensor{
     private Wire<com.robotraconteur.gps.GpsState> rr_state;
@@ -3332,6 +3973,22 @@ public class GpsSensor_stub : ServiceStub , GpsSensor, async_GpsSensor{
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
@@ -3413,8 +4070,27 @@ public class GpsSensor_stub : ServiceStub , GpsSensor, async_GpsSensor{
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
 }
-public interface async_ImuSensor : async_Sensor
+public interface async_ImuSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -3426,6 +4102,9 @@ public interface async_ImuSensor : async_Sensor
     Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_reference_pose(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class ImuSensor_stub : ServiceStub , ImuSensor, async_ImuSensor{
@@ -3483,6 +4162,22 @@ public class ImuSensor_stub : ServiceStub , ImuSensor, async_ImuSensor{
     public com.robotraconteur.datetime.Duration last_measurement_time {
     get {
     return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
     }
     }
     public void setf_reference_pose() {
@@ -3572,11 +4267,236 @@ public class ImuSensor_stub : ServiceStub , ImuSensor, async_ImuSensor{
     var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
     return rr_ret;
     } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
     public virtual async Task async_setf_reference_pose(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
     {
     using(var rr_return = await rr_async_FunctionCall("setf_reference_pose",rr_param,rr_timeout)) {
+    } } }
+}
+public interface async_LogicalCameraSensor : async_Sensor, com.robotraconteur.device.isoch.async_IsochDevice
+{
+    Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<string> async_get_parent_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.geometry.Pose> async_get_pose(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<bool> async_get_active(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_active(bool value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<double> async_get_update_rate(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.objectrecognition.RecognizedObjects> async_capture_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+}
+public class LogicalCameraSensor_stub : ServiceStub , LogicalCameraSensor, async_LogicalCameraSensor{
+    private Pipe<com.robotraconteur.objectrecognition.RecognizedObjects> rr_image_stream;
+    public LogicalCameraSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    rr_image_stream=new Pipe<com.robotraconteur.objectrecognition.RecognizedObjects>(innerstub.GetPipe("image_stream"));
+    }
+    public string name {
+    get {
+    return MessageElementUtil.UnpackString(rr_innerstub.PropertyGet("name"));
+    }
+    }
+    public string type {
+    get {
+    return MessageElementUtil.UnpackString(rr_innerstub.PropertyGet("type"));
+    }
+    }
+    public string parent_name {
+    get {
+    return MessageElementUtil.UnpackString(rr_innerstub.PropertyGet("parent_name"));
+    }
+    }
+    public com.robotraconteur.geometry.Pose pose {
+    get {
+    return MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Pose>(rr_innerstub.PropertyGet("pose"));
+    }
+    }
+    public bool active {
+    get {
+    return (MessageElementUtil.UnpackScalar<bool>(rr_innerstub.PropertyGet("active")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<bool>("value",value))
+    {
+    rr_innerstub.PropertySet("active", m);
+    }
+    }
+    }
+    public double update_rate {
+    get {
+    return (MessageElementUtil.UnpackScalar<double>(rr_innerstub.PropertyGet("update_rate")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<double>("value",value))
+    {
+    rr_innerstub.PropertySet("update_rate", m);
+    }
+    }
+    }
+    public com.robotraconteur.datetime.Duration last_update_time {
+    get {
+    return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_update_time"));
+    }
+    }
+    public com.robotraconteur.datetime.Duration last_measurement_time {
+    get {
+    return MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_innerstub.PropertyGet("last_measurement_time"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
+    }
+    }
+    public com.robotraconteur.objectrecognition.RecognizedObjects capture_image() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("capture_image",rr_param))
+    {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.objectrecognition.RecognizedObjects>(rr_me);
+    }
+    }
+    }
+    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    }
+    public Pipe<com.robotraconteur.objectrecognition.RecognizedObjects> image_stream {
+    get { return rr_image_stream;  }
+    set { throw new InvalidOperationException();}
+    }
+    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public virtual async Task<string> async_get_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("name",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackString(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<string> async_get_type(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("type",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackString(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<string> async_get_parent_name(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("parent_name",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackString(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<com.robotraconteur.geometry.Pose> async_get_pose(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("pose",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Pose>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<bool> async_get_active(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("active",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<bool>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_active(bool value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<bool>("value",value))
+    {
+    await rr_async_PropertySet("active",mm,rr_timeout);
+    }
+    }
+    public virtual async Task<double> async_get_update_rate(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("update_rate",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<double>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_update_rate(double value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<double>("value",value))
+    {
+    await rr_async_PropertySet("update_rate",mm,rr_timeout);
+    }
+    }
+    public virtual async Task<com.robotraconteur.datetime.Duration> async_get_last_update_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("last_update_time",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<com.robotraconteur.datetime.Duration> async_get_last_measurement_time(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("last_measurement_time",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.Duration>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
+    public virtual async Task<com.robotraconteur.objectrecognition.RecognizedObjects> async_capture_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("capture_image",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.objectrecognition.RecognizedObjects>(rr_return);
+    return rr_ret;
     } } }
 }
 public interface async_Light
@@ -3823,7 +4743,7 @@ public class Base_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.Base"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.Base"; } }
 }
 public class Server_skel : ServiceSkel {
     protected Server obj;
@@ -3839,6 +4759,16 @@ public class Server_skel : ServiceSkel {
     }
     public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
     switch (membername) {
+    case "device_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
     case "world_names":
     {
     if (async_obj!=null)    {
@@ -3955,7 +4885,7 @@ public class Server_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.Server"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.Server"; } }
 }
 public class World_skel : ServiceSkel {
     protected World obj;
@@ -4123,7 +5053,7 @@ public class World_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.World"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.World"; } }
 }
 public class Entity_skel : ServiceSkel {
     protected Entity obj;
@@ -4159,6 +5089,26 @@ public class Entity_skel : ServiceSkel {
     string ret=obj.scoped_name;
     return MessageElementUtil.PackString("return",ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -4166,6 +5116,16 @@ public class Entity_skel : ServiceSkel {
     }
     public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
     switch (membername) {
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
     default:
     break;
     }
@@ -4277,7 +5237,7 @@ public class Entity_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.Entity"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.Entity"; } }
 }
 public class Model_skel : ServiceSkel {
     protected Model obj;
@@ -4343,6 +5303,26 @@ public class Model_skel : ServiceSkel {
     List<string> ret=obj.joint_names;
     return MessageElementUtil.PackListType<string>("return",ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -4350,6 +5330,16 @@ public class Model_skel : ServiceSkel {
     }
     public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
     switch (membername) {
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
     default:
     break;
     }
@@ -4516,7 +5506,7 @@ public class Model_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.Model"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.Model"; } }
 }
 public class Link_skel : ServiceSkel {
     protected Link obj;
@@ -4562,6 +5552,26 @@ public class Link_skel : ServiceSkel {
     List<string> ret=obj.sensor_names;
     return MessageElementUtil.PackListType<string>("return",ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -4569,6 +5579,16 @@ public class Link_skel : ServiceSkel {
     }
     public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
     switch (membername) {
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
     default:
     break;
     }
@@ -4681,7 +5701,7 @@ public class Link_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.Link"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.Link"; } }
 }
 public class Joint_skel : ServiceSkel {
     protected Joint obj;
@@ -4747,6 +5767,26 @@ public class Joint_skel : ServiceSkel {
     uint ret=obj.dof;
     return MessageElementUtil.PackScalar<uint>("return",ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -4754,6 +5794,16 @@ public class Joint_skel : ServiceSkel {
     }
     public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
     switch (membername) {
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
     default:
     break;
     }
@@ -4886,7 +5936,7 @@ public class Joint_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.Joint"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.Joint"; } }
 }
 public class JointController_skel : ServiceSkel {
     protected JointController obj;
@@ -4932,6 +5982,26 @@ public class JointController_skel : ServiceSkel {
     Dictionary<string,com.robotraconteur.pid.PIDParam> ret=obj.velocity_pid;
     return MessageElementUtil.PackMapType<string,com.robotraconteur.pid.PIDParam>("return",ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -4939,6 +6009,16 @@ public class JointController_skel : ServiceSkel {
     }
     public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
     switch (membername) {
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
     default:
     break;
     }
@@ -5062,7 +6142,7 @@ public class JointController_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.JointController"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.JointController"; } }
 }
 public class Sensor_skel : ServiceSkel {
     protected Sensor obj;
@@ -5158,6 +6238,26 @@ public class Sensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -5183,6 +6283,16 @@ public class Sensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -5268,7 +6378,7 @@ public class Sensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.Sensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.Sensor"; } }
 }
 public class CameraSensor_skel : ServiceSkel {
     protected CameraSensor obj;
@@ -5364,6 +6474,26 @@ public class CameraSensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -5389,6 +6519,16 @@ public class CameraSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -5485,7 +6625,7 @@ public class CameraSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.CameraSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.CameraSensor"; } }
 }
 public class MultiCameraSensor_skel : ServiceSkel {
     protected MultiCameraSensor obj;
@@ -5591,6 +6731,26 @@ public class MultiCameraSensor_skel : ServiceSkel {
     int ret=obj.camera_count;
     return MessageElementUtil.PackScalar<int>("return",ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -5616,6 +6776,16 @@ public class MultiCameraSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -5713,7 +6883,7 @@ public class MultiCameraSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.MultiCameraSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.MultiCameraSensor"; } }
 }
 public class DepthCameraSensor_skel : ServiceSkel {
     protected DepthCameraSensor obj;
@@ -5809,6 +6979,26 @@ public class DepthCameraSensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -5834,6 +7024,16 @@ public class DepthCameraSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -5930,7 +7130,7 @@ public class DepthCameraSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.DepthCameraSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.DepthCameraSensor"; } }
 }
 public class RaySensor_skel : ServiceSkel {
     protected RaySensor obj;
@@ -6026,6 +7226,26 @@ public class RaySensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -6051,6 +7271,16 @@ public class RaySensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -6147,7 +7377,7 @@ public class RaySensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.RaySensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.RaySensor"; } }
 }
 public class ContactSensor_skel : ServiceSkel {
     protected ContactSensor obj;
@@ -6243,6 +7473,26 @@ public class ContactSensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -6268,6 +7518,16 @@ public class ContactSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -6354,7 +7614,7 @@ public class ContactSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.ContactSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.ContactSensor"; } }
 }
 public class AltimeterSensor_skel : ServiceSkel {
     protected AltimeterSensor obj;
@@ -6450,6 +7710,26 @@ public class AltimeterSensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -6475,6 +7755,16 @@ public class AltimeterSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -6561,7 +7851,7 @@ public class AltimeterSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.AltimeterSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.AltimeterSensor"; } }
 }
 public class SonarSensor_skel : ServiceSkel {
     protected SonarSensor obj;
@@ -6687,6 +7977,26 @@ public class SonarSensor_skel : ServiceSkel {
     double ret=obj.radius;
     return MessageElementUtil.PackScalar<double>("return",ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -6712,6 +8022,16 @@ public class SonarSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -6798,7 +8118,7 @@ public class SonarSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.SonarSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.SonarSensor"; } }
 }
 public class MagnetometerSensor_skel : ServiceSkel {
     protected MagnetometerSensor obj;
@@ -6894,6 +8214,26 @@ public class MagnetometerSensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -6919,6 +8259,16 @@ public class MagnetometerSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -7005,7 +8355,7 @@ public class MagnetometerSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.MagnetometerSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.MagnetometerSensor"; } }
 }
 public class ForceTorqueSensor_skel : ServiceSkel {
     protected ForceTorqueSensor obj;
@@ -7101,6 +8451,26 @@ public class ForceTorqueSensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -7126,6 +8496,16 @@ public class ForceTorqueSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -7212,7 +8592,7 @@ public class ForceTorqueSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.ForceTorqueSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.ForceTorqueSensor"; } }
 }
 public class GpsSensor_skel : ServiceSkel {
     protected GpsSensor obj;
@@ -7308,6 +8688,26 @@ public class GpsSensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -7333,6 +8733,16 @@ public class GpsSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -7419,7 +8829,7 @@ public class GpsSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.GpsSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.GpsSensor"; } }
 }
 public class ImuSensor_skel : ServiceSkel {
     protected ImuSensor obj;
@@ -7515,6 +8925,26 @@ public class ImuSensor_skel : ServiceSkel {
     com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
     return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
     }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
     default:
     break;
     }
@@ -7540,6 +8970,16 @@ public class ImuSensor_skel : ServiceSkel {
     return;
     }
     obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
     return;
     }
     default:
@@ -7636,7 +9076,254 @@ public class ImuSensor_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.ImuSensor"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.ImuSensor"; } }
+}
+public class LogicalCameraSensor_skel : ServiceSkel {
+    protected LogicalCameraSensor obj;
+    protected async_LogicalCameraSensor async_obj;
+    public LogicalCameraSensor_skel(object o) : base(o)    {
+    obj=(LogicalCameraSensor)o;
+    async_obj = o as async_LogicalCameraSensor;
+    }
+    public override void ReleaseCastObject() { 
+    obj=null;
+    async_obj=null;
+    base.ReleaseCastObject();
+    }
+    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "name":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_name().ContinueWith(t => async_adapter.EndTask<string>(t,async_ret => MessageElementUtil.PackString("return",async_ret)));
+    return null;
+    }
+    string ret=obj.name;
+    return MessageElementUtil.PackString("return",ret);
+    }
+    case "type":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_type().ContinueWith(t => async_adapter.EndTask<string>(t,async_ret => MessageElementUtil.PackString("return",async_ret)));
+    return null;
+    }
+    string ret=obj.type;
+    return MessageElementUtil.PackString("return",ret);
+    }
+    case "parent_name":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_parent_name().ContinueWith(t => async_adapter.EndTask<string>(t,async_ret => MessageElementUtil.PackString("return",async_ret)));
+    return null;
+    }
+    string ret=obj.parent_name;
+    return MessageElementUtil.PackString("return",ret);
+    }
+    case "pose":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_pose().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.geometry.Pose>(t,async_ret => MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Pose>("return",ref async_ret)));
+    return null;
+    }
+    com.robotraconteur.geometry.Pose ret=obj.pose;
+    return MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Pose>("return",ref ret);
+    }
+    case "active":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_active().ContinueWith(t => async_adapter.EndTask<bool>(t,async_ret => MessageElementUtil.PackScalar<bool>("return",async_ret)));
+    return null;
+    }
+    bool ret=obj.active;
+    return MessageElementUtil.PackScalar<bool>("return",ret);
+    }
+    case "update_rate":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_update_rate().ContinueWith(t => async_adapter.EndTask<double>(t,async_ret => MessageElementUtil.PackScalar<double>("return",async_ret)));
+    return null;
+    }
+    double ret=obj.update_rate;
+    return MessageElementUtil.PackScalar<double>("return",ret);
+    }
+    case "last_update_time":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_last_update_time().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.datetime.Duration>(t,async_ret => MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref async_ret)));
+    return null;
+    }
+    com.robotraconteur.datetime.Duration ret=obj.last_update_time;
+    return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
+    }
+    case "last_measurement_time":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_last_measurement_time().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.datetime.Duration>(t,async_ret => MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref async_ret)));
+    return null;
+    }
+    com.robotraconteur.datetime.Duration ret=obj.last_measurement_time;
+    return MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.Duration>("return",ref ret);
+    }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "active":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_active((MessageElementUtil.UnpackScalar<bool>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.active=(MessageElementUtil.UnpackScalar<bool>(m));
+    return;
+    }
+    case "update_rate":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_update_rate((MessageElementUtil.UnpackScalar<double>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.update_rate=(MessageElementUtil.UnpackScalar<double>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
+    switch (rr_membername) {
+    case "capture_image":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_capture_image().ContinueWith(t => rr_async_adapter.EndTask<com.robotraconteur.objectrecognition.RecognizedObjects>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.objectrecognition.RecognizedObjects rr_ret=this.obj.capture_image();
+    return MessageElementUtil.PackStructure("return",rr_ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override object GetSubObj(string name, string ind) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("");
+    }
+    public override void RegisterEvents(object rrobj1) {
+    obj=(LogicalCameraSensor)rrobj1;
+    }
+    public override void UnregisterEvents(object rrobj1) {
+    obj=(LogicalCameraSensor)rrobj1;
+    }
+    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void InitPipeServers(object rrobj1) {
+    obj=(LogicalCameraSensor)rrobj1;
+    obj.image_stream=new Pipe<com.robotraconteur.objectrecognition.RecognizedObjects>(innerskel.GetPipe("image_stream"));
+    }
+    public override void InitCallbackServers(object rrobj1) {
+    obj=(LogicalCameraSensor)rrobj1;
+    }
+    public override void InitWireServers(object rrobj1) {
+    obj=(LogicalCameraSensor)rrobj1;
+    }
+    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override string RRType { get { return "org.gazebosim.gazebo.LogicalCameraSensor"; } }
 }
 public class Light_skel : ServiceSkel {
     protected Light obj;
@@ -7822,13 +9509,14 @@ public class Light_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "experimental.gazebo.Light"; } }
+    public override string RRType { get { return "org.gazebosim.gazebo.Light"; } }
 }
 public class Base_default_impl : Base{
     public virtual string name {get; set;} = "";
     public virtual string scoped_name {get; set;} = "";
 }
 public class Server_default_impl : Server{
+    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual List<string> world_names {get; set;} = default(List<string>);
     public virtual List<string> sensor_names {get; set;} = default(List<string>);
     public virtual World get_worlds(string ind) {
@@ -7878,6 +9566,8 @@ public class Entity_default_impl : Entity{
     protected WireBroadcaster<com.robotraconteur.geometry.SpatialAcceleration> rrvar_relative_acceleration;
     public virtual string name {get; set;} = "";
     public virtual string scoped_name {get; set;} = "";
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual void setf_world_pose(com.robotraconteur.geometry.Pose pose) {
     throw new NotImplementedException();    }
     public virtual void setf_relative_pose(com.robotraconteur.geometry.Pose pose) {
@@ -7937,6 +9627,8 @@ public class Model_default_impl : Model{
     public virtual List<string> child_model_names {get; set;} = default(List<string>);
     public virtual List<string> link_names {get; set;} = default(List<string>);
     public virtual List<string> joint_names {get; set;} = default(List<string>);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual void setf_world_pose(com.robotraconteur.geometry.Pose pose) {
     throw new NotImplementedException();    }
     public virtual void setf_relative_pose(com.robotraconteur.geometry.Pose pose) {
@@ -8018,6 +9710,8 @@ public class Link_default_impl : Link{
     public virtual string name {get; set;} = "";
     public virtual string scoped_name {get; set;} = "";
     public virtual List<string> sensor_names {get; set;} = default(List<string>);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual void setf_world_pose(com.robotraconteur.geometry.Pose pose) {
     throw new NotImplementedException();    }
     public virtual void setf_relative_pose(com.robotraconteur.geometry.Pose pose) {
@@ -8083,6 +9777,8 @@ public class Joint_default_impl : Joint{
     public virtual string parent_link_name {get; set;} = "";
     public virtual string child_link_name {get; set;} = "";
     public virtual uint dof {get; set;} = default(uint);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual com.robotraconteur.geometry.Vector3[] getf_global_axes() {
     throw new NotImplementedException();    }
     public virtual com.robotraconteur.geometry.Vector3[] getf_local_axes() {
@@ -8136,6 +9832,8 @@ public class JointController_default_impl : JointController{
     public virtual List<string> joint_names {get; set;} = default(List<string>);
     public virtual Dictionary<string,com.robotraconteur.pid.PIDParam> position_pid {get; set;} = default(Dictionary<string,com.robotraconteur.pid.PIDParam>);
     public virtual Dictionary<string,com.robotraconteur.pid.PIDParam> velocity_pid {get; set;} = default(Dictionary<string,com.robotraconteur.pid.PIDParam>);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual void add_joint(string name) {
     throw new NotImplementedException();    }
     public virtual void setf_position_pid(string name, com.robotraconteur.pid.PIDParam pid) {
@@ -8187,6 +9885,8 @@ public class Sensor_default_impl : Sensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
 }
 public class CameraSensor_default_impl : CameraSensor{
     protected PipeBroadcaster<com.robotraconteur.image.Image> rrvar_image_stream;
@@ -8198,6 +9898,8 @@ public class CameraSensor_default_impl : CameraSensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual com.robotraconteur.image.Image capture_image() {
     throw new NotImplementedException();    }
     public virtual Pipe<com.robotraconteur.image.Image> image_stream {
@@ -8219,6 +9921,8 @@ public class MultiCameraSensor_default_impl : MultiCameraSensor{
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual int camera_count {get; set;} = default(int);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual com.robotraconteur.image.Image capture_image(int ind) {
     throw new NotImplementedException();    }
     public virtual Pipe<Dictionary<int,com.robotraconteur.image.Image>> image_stream {
@@ -8239,6 +9943,8 @@ public class DepthCameraSensor_default_impl : DepthCameraSensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual com.robotraconteur.image.DepthImage capture_image() {
     throw new NotImplementedException();    }
     public virtual Pipe<com.robotraconteur.image.DepthImage> image_stream {
@@ -8259,6 +9965,8 @@ public class RaySensor_default_impl : RaySensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual com.robotraconteur.laserscan.LaserScan capture_scan() {
     throw new NotImplementedException();    }
     public virtual Pipe<com.robotraconteur.laserscan.LaserScan> scan_stream {
@@ -8279,6 +9987,8 @@ public class ContactSensor_default_impl : ContactSensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual Wire<List<Contact>> contacts {
     get { return rrvar_contacts.Wire;  }
     set {
@@ -8297,6 +10007,8 @@ public class AltimeterSensor_default_impl : AltimeterSensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual Wire<double> altitude {
     get { return rrvar_altitude.Wire;  }
     set {
@@ -8318,6 +10030,8 @@ public class SonarSensor_default_impl : SonarSensor{
     public virtual double range_min {get; set;} = default(double);
     public virtual double range_max {get; set;} = default(double);
     public virtual double radius {get; set;} = default(double);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual Wire<double> range {
     get { return rrvar_range.Wire;  }
     set {
@@ -8336,6 +10050,8 @@ public class MagnetometerSensor_default_impl : MagnetometerSensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual Wire<com.robotraconteur.geometry.Vector3> magnetic_field {
     get { return rrvar_magnetic_field.Wire;  }
     set {
@@ -8354,6 +10070,8 @@ public class ForceTorqueSensor_default_impl : ForceTorqueSensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual Wire<com.robotraconteur.geometry.Wrench> force_torque {
     get { return rrvar_force_torque.Wire;  }
     set {
@@ -8372,6 +10090,8 @@ public class GpsSensor_default_impl : GpsSensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual Wire<com.robotraconteur.gps.GpsState> state {
     get { return rrvar_state.Wire;  }
     set {
@@ -8390,6 +10110,8 @@ public class ImuSensor_default_impl : ImuSensor{
     public virtual double update_rate {get; set;} = default(double);
     public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
     public virtual void setf_reference_pose() {
     throw new NotImplementedException();    }
     public virtual Wire<com.robotraconteur.imu.ImuState> state {
@@ -8397,6 +10119,28 @@ public class ImuSensor_default_impl : ImuSensor{
     set {
     if (rrvar_state!=null) throw new InvalidOperationException("Pipe already set");
     rrvar_state= new WireBroadcaster<com.robotraconteur.imu.ImuState>(value);
+    }
+    }
+}
+public class LogicalCameraSensor_default_impl : LogicalCameraSensor{
+    protected PipeBroadcaster<com.robotraconteur.objectrecognition.RecognizedObjects> rrvar_image_stream;
+    public virtual string name {get; set;} = "";
+    public virtual string type {get; set;} = "";
+    public virtual string parent_name {get; set;} = "";
+    public virtual com.robotraconteur.geometry.Pose pose {get; set;} = default(com.robotraconteur.geometry.Pose);
+    public virtual bool active {get; set;} = default(bool);
+    public virtual double update_rate {get; set;} = default(double);
+    public virtual com.robotraconteur.datetime.Duration last_update_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
+    public virtual com.robotraconteur.objectrecognition.RecognizedObjects capture_image() {
+    throw new NotImplementedException();    }
+    public virtual Pipe<com.robotraconteur.objectrecognition.RecognizedObjects> image_stream {
+    get { return rrvar_image_stream.Pipe;  }
+    set {
+    if (rrvar_image_stream!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_image_stream= new PipeBroadcaster<com.robotraconteur.objectrecognition.RecognizedObjects>(value);
     }
     }
 }
