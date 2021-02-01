@@ -42,6 +42,8 @@ namespace GazeboModelRobotRaconteurDriver
                 rox_robots_no_limits[i].Joint_vel_limit = null;
                 rox_robots_no_limits[i].Joint_acc_limit = null;
             }
+
+            this._trajectory_error_tol = 1000;
         }
 
         protected override bool _verify_communication(long now)
@@ -261,7 +263,11 @@ namespace GazeboModelRobotRaconteurDriver
                 }
 
                 gazebo_controller_position_command.OutValue = cmd;
+                _position_command = joint_pos_cmd;
+                return;
             }
+
+            _position_command = null;
         }
 
         protected virtual void _on_joint_position(Wire<Dictionary<string,double>>.WireConnection c, Dictionary<string,double> value, TimeSpec ts)
