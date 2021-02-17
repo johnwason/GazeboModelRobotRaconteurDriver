@@ -29,6 +29,7 @@ namespace GazeboModelRobotRaconteurDriver
 
             bool shouldShowHelp = false;
             string robot_info_file = null;
+            string robot_name = null;
             ushort tcp_port = 58653;
             string node_name = "gazebo_robot";
             string model_name = null;
@@ -36,6 +37,7 @@ namespace GazeboModelRobotRaconteurDriver
 
             var options = new OptionSet {
                 { "robot-info-file=", n => robot_info_file = n },
+                { "robot-name=", "override the robot device name", n=>robot_name = n },
                 { "model-name=", "the gazebo model to control", n=> model_name=n },
                 { "gazebo-url=", "url for the Robot Raconteur Gazebo plugin", n=> gazebo_url = n },
                 { "h|help", "show this message and exit", h => shouldShowHelp = h != null }
@@ -83,7 +85,7 @@ namespace GazeboModelRobotRaconteurDriver
                 return 1;
             }
 
-            var robot_info = RobotInfoParser.LoadRobotInfoYamlWithIdentifierLocks(robot_info_file);
+            var robot_info = RobotInfoParser.LoadRobotInfoYamlWithIdentifierLocks(robot_info_file,robot_name);
             robot_info.Item1.robot_capabilities &= (uint)(RobotCapabilities.jog_command | RobotCapabilities.position_command | RobotCapabilities.trajectory_command);
 
             RobotOperationalMode robot_op_mode = RobotOperationalMode.auto;
