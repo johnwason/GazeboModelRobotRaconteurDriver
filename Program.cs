@@ -19,6 +19,7 @@ using com.robotraconteur.robotics.robot;
 using Mono.Options;
 using RobotRaconteur;
 using RobotRaconteur.Companion.InfoParser;
+using RobotRaconteur.Companion.Util;
 
 namespace GazeboModelRobotRaconteurDriver
 {
@@ -107,7 +108,8 @@ namespace GazeboModelRobotRaconteurDriver
                     using (var robot = new GazeboRobot(robot_info.Item1, gazebo_url, model_name, robot_op_mode))
                     {
                         robot._start_robot();
-                        RobotRaconteurNode.s.RegisterService("robot", "com.robotraconteur.robotics.robot", robot);
+                        var robot_service_ctx = RobotRaconteurNode.s.RegisterService("robot", "com.robotraconteur.robotics.robot", robot);
+                        robot_service_ctx.SetServiceAttributes(AttributesUtil.GetDefaultServiceAtributesFromDeviceInfo(robot_info.Item1.device_info));
 
                         Console.WriteLine("Press enter to exit");
                         Console.ReadKey();
