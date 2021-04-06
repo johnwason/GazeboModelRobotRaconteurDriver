@@ -139,6 +139,9 @@ public interface Link : Entity, Base, com.robotraconteur.device.isoch.IsochDevic
     uint isoch_downsample { get;  set; 	}
     void setf_world_pose(com.robotraconteur.geometry.Pose pose);
     void setf_relative_pose(com.robotraconteur.geometry.Pose pose);
+    void attach_link(string model, string link_name);
+    void attach_link_with_pose(string model_name, string link_name, com.robotraconteur.geometry.Pose pose);
+    void detach_link(string model_name, string link_name);
     Wire<com.robotraconteur.geometry.Pose> world_pose{ get; set; }
     Wire<com.robotraconteur.geometry.Pose> relative_pose{ get; set; }
     Wire<com.robotraconteur.geometry.SpatialVelocity> world_velocity{ get; set; }
@@ -250,8 +253,8 @@ public interface DepthCameraSensor : Sensor, com.robotraconteur.device.isoch.Iso
     com.robotraconteur.datetime.Duration last_measurement_time { get; 	}
     com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
     uint isoch_downsample { get;  set; 	}
-    com.robotraconteur.image.DepthImage capture_image();
-    Pipe<com.robotraconteur.image.DepthImage> image_stream{ get; set; }
+    com.robotraconteur.image.Image capture_depth_image();
+    Pipe<com.robotraconteur.image.Image> depth_image_stream{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
@@ -422,7 +425,7 @@ public class org__gazebosim__gazeboFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service org.gazebosim.gazebo\n\nstdver 0.10\n\nimport com.robotraconteur.geometry\nimport com.robotraconteur.image\nimport com.robotraconteur.color\nimport com.robotraconteur.datetime\nimport com.robotraconteur.laserscan\nimport com.robotraconteur.pid\nimport com.robotraconteur.gps\nimport com.robotraconteur.imu\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.objectrecognition\n\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.Quaternion\nusing com.robotraconteur.geometry.Pose\nusing com.robotraconteur.geometry.SpatialVelocity\nusing com.robotraconteur.geometry.SpatialAcceleration\nusing com.robotraconteur.geometry.Wrench\nusing com.robotraconteur.image.Image\nusing com.robotraconteur.image.DepthImage\nusing com.robotraconteur.color.ColorRGBAf as Color\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.datetime.Duration\nusing com.robotraconteur.laserscan.LaserScan\nusing com.robotraconteur.pid.PIDParam\nusing com.robotraconteur.gps.GpsState\nusing com.robotraconteur.imu.ImuState\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.objectrecognition.RecognizedObjects\n\nstruct Contact\nfield string contact_name1\nfield string contact_name2\nend\n\nobject Base\nproperty string name [readonly]\nproperty string scoped_name [readonly]\nend\n\nobject Server\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\n\nproperty string{list} world_names [readonly]\nobjref World{string} worlds\n\nproperty string{list} sensor_names [readonly]\nobjref Sensor{string} sensors\nend\n\nstruct WorldTimes\nfield Duration sim_time\nfield Duration real_time\nfield DateTimeUTC wall_time\nfield DateTimeUTC start_time\nend\n\nobject World\nproperty string name [readonly]\n\nwire Duration sim_time [readonly]\nwire WorldTimes time [readonly]\n\nproperty string{list} model_names [readonly]\nobjref Model{string} models\n\nproperty string{list} light_names [readonly]\nobjref Light{string} lights\n\nfunction void insert_model(string model_sdf, string model_name, Pose model_pose)\nfunction void remove_model(string model_name)\n\nend\n\nobject Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Model\nimplements Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string{list} child_model_names [readonly]\nobjref Model{string} child_models\n\nproperty string{list} link_names [readonly]\nobjref Link{string} links\n\nproperty string{list} joint_names [readonly]\nobjref Joint{string} joints\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nfunction void create_joint_controller()\nfunction void destroy_joint_controller()\n\nobjref JointController joint_controller\n\nfunction void create_kinematic_joint_controller()\nfunction void destroy_kinematic_joint_controller()\n\nobjref JointController kinematic_joint_controller\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\n\nend\n\nobject Link\nimplements Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string{list} sensor_names [readonly]\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nwire Wrench{list} applied_wrenches [writeonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nnamedarray JointWrench\nfield Wrench body1_wrench\nfield Wrench body2_wrench\nend\n\nobject Joint\nimplements Base\nimplements IsochDevice\n\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string parent_link_name [readonly]\nproperty string child_link_name [readonly]\n\nproperty uint32 dof [readonly]\n\nfunction Vector3[] getf_global_axes()\nfunction Vector3[] getf_local_axes()\n\nwire double[] axes_position [readonly]\nwire double[] axes_velocity [readonly]\nwire double[] axes_force [readonly]\n\nfunction void setf_axis_position(uint32 axis, double position)\nfunction void setf_axis_velocity(uint32 axis, double vel)\n\nwire JointWrench force_torque [readonly]\n\nwire double[] apply_axes_force [writeonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\n\nend\n\nobject JointController\nimplements IsochDevice\nproperty string{list} joint_names [readonly]\nproperty PIDParam{string} position_pid [readonly]\nproperty PIDParam{string} velocity_pid [readonly]\nwire double{string} joint_position [readonly]\nwire double{string} joint_velocity [readonly]\nwire double{string} joint_position_command [writeonly]\nwire double{string} joint_velocity_command [writeonly]\n\nwire double{string} joint_forces [readonly]\n\nfunction void add_joint(string name)\nfunction void setf_position_pid(string name, PIDParam pid)\nfunction void setf_velocity_pid(string name, PIDParam pid)\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject CameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction Image capture_image()\npipe Image image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject MultiCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nproperty int32 camera_count [readonly]\nfunction Image capture_image(int32 ind)\npipe Image{int32} image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject DepthCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction DepthImage capture_image()\npipe DepthImage image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject RaySensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction LaserScan capture_scan()\npipe LaserScan scan_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ContactSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Contact{list} contacts [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject AltimeterSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire double altitude [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject SonarSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nproperty double range_min [readonly]\nproperty double range_max [readonly]\nproperty double radius [readonly]\n\nwire double range [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject MagnetometerSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Vector3 magnetic_field [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ForceTorqueSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Wrench force_torque [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject GpsSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire GpsState state [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ImuSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nfunction void setf_reference_pose()\n\nwire ImuState state [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject LogicalCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction RecognizedObjects capture_image()\npipe RecognizedObjects image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Light\nproperty string name [readonly]\nproperty string type [readonly]\nproperty Pose pose [readonly]\nproperty Vector3 direction [readonly]\n\nproperty Color diffuse_color\nproperty Color specular_color\nend\n";
+    const string s="service org.gazebosim.gazebo\n\nstdver 0.10\n\nimport com.robotraconteur.geometry\nimport com.robotraconteur.image\nimport com.robotraconteur.color\nimport com.robotraconteur.datetime\nimport com.robotraconteur.laserscan\nimport com.robotraconteur.pid\nimport com.robotraconteur.gps\nimport com.robotraconteur.imu\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.objectrecognition\n\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.Quaternion\nusing com.robotraconteur.geometry.Pose\nusing com.robotraconteur.geometry.SpatialVelocity\nusing com.robotraconteur.geometry.SpatialAcceleration\nusing com.robotraconteur.geometry.Wrench\nusing com.robotraconteur.image.Image\nusing com.robotraconteur.color.ColorRGBAf as Color\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.datetime.Duration\nusing com.robotraconteur.laserscan.LaserScan\nusing com.robotraconteur.pid.PIDParam\nusing com.robotraconteur.gps.GpsState\nusing com.robotraconteur.imu.ImuState\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.objectrecognition.RecognizedObjects\n\nstruct Contact\nfield string contact_name1\nfield string contact_name2\nend\n\nobject Base\nproperty string name [readonly]\nproperty string scoped_name [readonly]\nend\n\nobject Server\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\n\nproperty string{list} world_names [readonly]\nobjref World{string} worlds\n\nproperty string{list} sensor_names [readonly]\nobjref Sensor{string} sensors\nend\n\nstruct WorldTimes\nfield Duration sim_time\nfield Duration real_time\nfield DateTimeUTC wall_time\nfield DateTimeUTC start_time\nend\n\nobject World\nproperty string name [readonly]\n\nwire Duration sim_time [readonly]\nwire WorldTimes time [readonly]\n\nproperty string{list} model_names [readonly]\nobjref Model{string} models\n\nproperty string{list} light_names [readonly]\nobjref Light{string} lights\n\nfunction void insert_model(string model_sdf, string model_name, Pose model_pose)\nfunction void remove_model(string model_name)\n\nend\n\nobject Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Model\nimplements Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string{list} child_model_names [readonly]\nobjref Model{string} child_models\n\nproperty string{list} link_names [readonly]\nobjref Link{string} links\n\nproperty string{list} joint_names [readonly]\nobjref Joint{string} joints\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nfunction void create_joint_controller()\nfunction void destroy_joint_controller()\n\nobjref JointController joint_controller\n\nfunction void create_kinematic_joint_controller()\nfunction void destroy_kinematic_joint_controller()\n\nobjref JointController kinematic_joint_controller\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\n\nend\n\nobject Link\nimplements Entity\nimplements Base\nimplements IsochDevice\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string{list} sensor_names [readonly]\n\nwire Pose world_pose [readonly]\nwire Pose relative_pose [readonly]\nfunction void setf_world_pose(Pose pose)\nfunction void setf_relative_pose(Pose pose)\n\nwire SpatialVelocity world_velocity [readonly]\nwire SpatialVelocity relative_velocity [readonly]\nwire SpatialAcceleration world_acceleration [readonly]\nwire SpatialAcceleration relative_acceleration [readonly]\n\nwire Wrench{list} applied_wrenches [writeonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\n\nfunction void attach_link(string model, string link_name)\nfunction void attach_link_with_pose(string model_name, string link_name, Pose pose)\nfunction void detach_link(string model_name, string link_name)\nend\n\nnamedarray JointWrench\nfield Wrench body1_wrench\nfield Wrench body2_wrench\nend\n\nobject Joint\nimplements Base\nimplements IsochDevice\n\nproperty string name [readonly]\nproperty string scoped_name [readonly]\n\nproperty string parent_link_name [readonly]\nproperty string child_link_name [readonly]\n\nproperty uint32 dof [readonly]\n\nfunction Vector3[] getf_global_axes()\nfunction Vector3[] getf_local_axes()\n\nwire double[] axes_position [readonly]\nwire double[] axes_velocity [readonly]\nwire double[] axes_force [readonly]\n\nfunction void setf_axis_position(uint32 axis, double position)\nfunction void setf_axis_velocity(uint32 axis, double vel)\n\nwire JointWrench force_torque [readonly]\n\nwire double[] apply_axes_force [writeonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\n\nend\n\nobject JointController\nimplements IsochDevice\nproperty string{list} joint_names [readonly]\nproperty PIDParam{string} position_pid [readonly]\nproperty PIDParam{string} velocity_pid [readonly]\nwire double{string} joint_position [readonly]\nwire double{string} joint_velocity [readonly]\nwire double{string} joint_position_command [writeonly]\nwire double{string} joint_velocity_command [writeonly]\n\nwire double{string} joint_forces [readonly]\n\nfunction void add_joint(string name)\nfunction void setf_position_pid(string name, PIDParam pid)\nfunction void setf_velocity_pid(string name, PIDParam pid)\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject CameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction Image capture_image()\npipe Image image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject MultiCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nproperty int32 camera_count [readonly]\nfunction Image capture_image(int32 ind)\npipe Image{int32} image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject DepthCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction Image capture_depth_image()\npipe Image depth_image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject RaySensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction LaserScan capture_scan()\npipe LaserScan scan_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ContactSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Contact{list} contacts [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject AltimeterSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire double altitude [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject SonarSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nproperty double range_min [readonly]\nproperty double range_max [readonly]\nproperty double radius [readonly]\n\nwire double range [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject MagnetometerSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Vector3 magnetic_field [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ForceTorqueSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire Wrench force_torque [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject GpsSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nwire GpsState state [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject ImuSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time [readonly]\n\nfunction void setf_reference_pose()\n\nwire ImuState state [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject LogicalCameraSensor\nimplements Sensor\nimplements IsochDevice\nproperty string name [readonly]\nproperty string type [readonly]\nproperty string parent_name [readonly]\nproperty Pose pose [readonly]\n\nproperty bool active\nproperty double update_rate\nproperty Duration last_update_time [readonly]\nproperty Duration last_measurement_time	[readonly]\n\nfunction RecognizedObjects capture_image()\npipe RecognizedObjects image_stream [readonly]\n\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject Light\nproperty string name [readonly]\nproperty string type [readonly]\nproperty Pose pose [readonly]\nproperty Vector3 direction [readonly]\n\nproperty Color diffuse_color\nproperty Color specular_color\nend\n";
     return s;
     }
     public override string GetServiceName() {return "org.gazebosim.gazebo";}
@@ -1345,6 +1348,9 @@ public interface async_Link : async_Entity, async_Base, com.robotraconteur.devic
     Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_world_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_setf_relative_pose(com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_attach_link(string model, string link_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_attach_link_with_pose(string model_name, string link_name, com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_detach_link(string model_name, string link_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class Link_stub : ServiceStub , Link, async_Link{
     private Wire<com.robotraconteur.geometry.Pose> rr_world_pose;
@@ -1408,6 +1414,37 @@ public class Link_stub : ServiceStub , Link, async_Link{
     {
     MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Pose>("pose",ref pose));
     using(MessageElement rr_me=rr_innerstub.FunctionCall("setf_relative_pose",rr_param))
+    {
+    }
+    }
+    }
+    public void attach_link(string model, string link_name) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("model",model));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("link_name",link_name));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("attach_link",rr_param))
+    {
+    }
+    }
+    }
+    public void attach_link_with_pose(string model_name, string link_name, com.robotraconteur.geometry.Pose pose) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("model_name",model_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("link_name",link_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Pose>("pose",ref pose));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("attach_link_with_pose",rr_param))
+    {
+    }
+    }
+    }
+    public void detach_link(string model_name, string link_name) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("model_name",model_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("link_name",link_name));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("detach_link",rr_param))
     {
     }
     }
@@ -1503,6 +1540,31 @@ public class Link_stub : ServiceStub , Link, async_Link{
     {
     MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Pose>("pose",ref pose));
     using(var rr_return = await rr_async_FunctionCall("setf_relative_pose",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_attach_link(string model, string link_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("model",model));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("link_name",link_name));
+    using(var rr_return = await rr_async_FunctionCall("attach_link",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_attach_link_with_pose(string model_name, string link_name, com.robotraconteur.geometry.Pose pose,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("model_name",model_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("link_name",link_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Pose>("pose",ref pose));
+    using(var rr_return = await rr_async_FunctionCall("attach_link_with_pose",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_detach_link(string model_name, string link_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("model_name",model_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("link_name",link_name));
+    using(var rr_return = await rr_async_FunctionCall("detach_link",rr_param,rr_timeout)) {
     } } }
 }
 public interface async_Joint : async_Base, com.robotraconteur.device.isoch.async_IsochDevice
@@ -2529,12 +2591,12 @@ public interface async_DepthCameraSensor : async_Sensor, com.robotraconteur.devi
     Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<com.robotraconteur.image.DepthImage> async_capture_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.image.Image> async_capture_depth_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
 public class DepthCameraSensor_stub : ServiceStub , DepthCameraSensor, async_DepthCameraSensor{
-    private Pipe<com.robotraconteur.image.DepthImage> rr_image_stream;
+    private Pipe<com.robotraconteur.image.Image> rr_depth_image_stream;
     public DepthCameraSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
-    rr_image_stream=new Pipe<com.robotraconteur.image.DepthImage>(innerstub.GetPipe("image_stream"));
+    rr_depth_image_stream=new Pipe<com.robotraconteur.image.Image>(innerstub.GetPipe("depth_image_stream"));
     }
     public string name {
     get {
@@ -2604,12 +2666,12 @@ public class DepthCameraSensor_stub : ServiceStub , DepthCameraSensor, async_Dep
     }
     }
     }
-    public com.robotraconteur.image.DepthImage capture_image() {
+    public com.robotraconteur.image.Image capture_depth_image() {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
     {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("capture_image",rr_param))
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("capture_depth_image",rr_param))
     {
-    return MessageElementUtil.UnpackStructure<com.robotraconteur.image.DepthImage>(rr_me);
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.image.Image>(rr_me);
     }
     }
     }
@@ -2619,8 +2681,8 @@ public class DepthCameraSensor_stub : ServiceStub , DepthCameraSensor, async_Dep
     break;
     }
     }
-    public Pipe<com.robotraconteur.image.DepthImage> image_stream {
-    get { return rr_image_stream;  }
+    public Pipe<com.robotraconteur.image.Image> depth_image_stream {
+    get { return rr_depth_image_stream;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -2711,12 +2773,12 @@ public class DepthCameraSensor_stub : ServiceStub , DepthCameraSensor, async_Dep
     await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
     }
     }
-    public virtual async Task<com.robotraconteur.image.DepthImage> async_capture_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    public virtual async Task<com.robotraconteur.image.Image> async_capture_depth_image(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
     {
     using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
     {
-    using(var rr_return = await rr_async_FunctionCall("capture_image",rr_param,rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.image.DepthImage>(rr_return);
+    using(var rr_return = await rr_async_FunctionCall("capture_depth_image",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.image.Image>(rr_return);
     return rr_ret;
     } } }
 }
@@ -5618,6 +5680,43 @@ public class Link_skel : ServiceSkel {
     this.obj.setf_relative_pose(pose);
     return new MessageElement("return",(int)0);
     }
+    case "attach_link":
+    {
+    string model=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"model"));
+    string link_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"link_name"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_attach_link(model, link_name).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.attach_link(model, link_name);
+    return new MessageElement("return",(int)0);
+    }
+    case "attach_link_with_pose":
+    {
+    string model_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"model_name"));
+    string link_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"link_name"));
+    com.robotraconteur.geometry.Pose pose=MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Pose>(vectorptr_messageelement_util.FindElement(rr_m,"pose"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_attach_link_with_pose(model_name, link_name, pose).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.attach_link_with_pose(model_name, link_name, pose);
+    return new MessageElement("return",(int)0);
+    }
+    case "detach_link":
+    {
+    string model_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"model_name"));
+    string link_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"link_name"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_detach_link(model_name, link_name).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.detach_link(model_name, link_name);
+    return new MessageElement("return",(int)0);
+    }
     default:
     break;
     }
@@ -7043,14 +7142,14 @@ public class DepthCameraSensor_skel : ServiceSkel {
     }
     public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
     switch (rr_membername) {
-    case "capture_image":
+    case "capture_depth_image":
     {
     if (async_obj!=null)    {
     rr_async_adapter.MakeAsync();
-    async_obj.async_capture_image().ContinueWith(t => rr_async_adapter.EndTask<com.robotraconteur.image.DepthImage>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    async_obj.async_capture_depth_image().ContinueWith(t => rr_async_adapter.EndTask<com.robotraconteur.image.Image>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
     return null;
     }
-    com.robotraconteur.image.DepthImage rr_ret=this.obj.capture_image();
+    com.robotraconteur.image.Image rr_ret=this.obj.capture_depth_image();
     return MessageElementUtil.PackStructure("return",rr_ret);
     }
     default:
@@ -7080,7 +7179,7 @@ public class DepthCameraSensor_skel : ServiceSkel {
     }
     public override void InitPipeServers(object rrobj1) {
     obj=(DepthCameraSensor)rrobj1;
-    obj.image_stream=new Pipe<com.robotraconteur.image.DepthImage>(innerskel.GetPipe("image_stream"));
+    obj.depth_image_stream=new Pipe<com.robotraconteur.image.Image>(innerskel.GetPipe("depth_image_stream"));
     }
     public override void InitCallbackServers(object rrobj1) {
     obj=(DepthCameraSensor)rrobj1;
@@ -9716,6 +9815,12 @@ public class Link_default_impl : Link{
     throw new NotImplementedException();    }
     public virtual void setf_relative_pose(com.robotraconteur.geometry.Pose pose) {
     throw new NotImplementedException();    }
+    public virtual void attach_link(string model, string link_name) {
+    throw new NotImplementedException();    }
+    public virtual void attach_link_with_pose(string model_name, string link_name, com.robotraconteur.geometry.Pose pose) {
+    throw new NotImplementedException();    }
+    public virtual void detach_link(string model_name, string link_name) {
+    throw new NotImplementedException();    }
     public virtual Wire<com.robotraconteur.geometry.Pose> world_pose {
     get { return rrvar_world_pose.Wire;  }
     set {
@@ -9934,7 +10039,7 @@ public class MultiCameraSensor_default_impl : MultiCameraSensor{
     }
 }
 public class DepthCameraSensor_default_impl : DepthCameraSensor{
-    protected PipeBroadcaster<com.robotraconteur.image.DepthImage> rrvar_image_stream;
+    protected PipeBroadcaster<com.robotraconteur.image.Image> rrvar_depth_image_stream;
     public virtual string name {get; set;} = "";
     public virtual string type {get; set;} = "";
     public virtual string parent_name {get; set;} = "";
@@ -9945,13 +10050,13 @@ public class DepthCameraSensor_default_impl : DepthCameraSensor{
     public virtual com.robotraconteur.datetime.Duration last_measurement_time {get; set;} = default(com.robotraconteur.datetime.Duration);
     public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
     public virtual uint isoch_downsample {get; set;} = default(uint);
-    public virtual com.robotraconteur.image.DepthImage capture_image() {
+    public virtual com.robotraconteur.image.Image capture_depth_image() {
     throw new NotImplementedException();    }
-    public virtual Pipe<com.robotraconteur.image.DepthImage> image_stream {
-    get { return rrvar_image_stream.Pipe;  }
+    public virtual Pipe<com.robotraconteur.image.Image> depth_image_stream {
+    get { return rrvar_depth_image_stream.Pipe;  }
     set {
-    if (rrvar_image_stream!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_image_stream= new PipeBroadcaster<com.robotraconteur.image.DepthImage>(value);
+    if (rrvar_depth_image_stream!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_depth_image_stream= new PipeBroadcaster<com.robotraconteur.image.Image>(value);
     }
     }
 }
